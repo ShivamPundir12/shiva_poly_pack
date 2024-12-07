@@ -6,7 +6,7 @@ import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
 import 'package:shiva_poly_pack/routes/app_routes.dart';
-import 'package:shiva_poly_pack/screens/onboardings/dots.dart';
+import 'package:shiva_poly_pack/screens/Customer/onboardings/dots.dart';
 
 class Onboarding_1 extends GetView<OnboardingController> {
   const Onboarding_1({super.key});
