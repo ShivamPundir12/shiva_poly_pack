@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:shiva_poly_pack/data/controller/local_storage.dart';
 import 'package:shiva_poly_pack/data/controller/onboarding.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
 import 'package:shiva_poly_pack/routes/app_routes.dart';
-import 'package:shiva_poly_pack/screens/Customer/onboardings/dots.dart';
+import 'package:shiva_poly_pack/screens/Customer/onboardings/material/dots.dart';
 
 class Onboarding_1 extends GetView<OnboardingController> {
   const Onboarding_1({super.key});
@@ -87,8 +88,8 @@ class Onboarding_1 extends GetView<OnboardingController> {
             controller.pageController
                 .nextPage(duration: Durations.long1, curve: Curves.decelerate);
           } else {
-            // controller.timer.cancel();
-            Get.toNamed(Routes.welcome_screen);
+            LocalStorageManager.saveData('onboard-done', 'yes');
+            Get.offNamedUntil(Routes.welcome_screen, (routes) => false);
           }
         },
         child: SvgPicture.asset('assets/icons/next.svg'),

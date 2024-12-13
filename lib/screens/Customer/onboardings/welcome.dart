@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
+import 'package:shiva_poly_pack/routes/app_routes.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -82,23 +84,26 @@ class WelcomeScreen extends StatelessWidget {
                           fontweight: FontWeight.w600,
                           fontcolor: ColorPallets.fadegrey2),
                     ),
-                    Container(
-                      height: _ui.heightPercent(12),
-                      alignment: Alignment.bottomLeft,
-                      child: Chip(
-                        backgroundColor: ColorPallets.themeColor,
-                        labelPadding: EdgeInsets.symmetric(
-                            horizontal: _ui.widthPercent(26),
-                            vertical: _ui.heightPercent(0.8)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        label: Text(
-                          'Get Started',
-                          style: Styles.getstyle(
-                              fontsize: _ui.widthPercent(5),
-                              fontweight: FontWeight.w800,
-                              fontcolor: ColorPallets.white),
+                    InkWell(
+                      onTap: () => Get.toNamed(Routes.sigin),
+                      child: Container(
+                        height: _ui.heightPercent(12),
+                        alignment: Alignment.bottomLeft,
+                        child: Chip(
+                          backgroundColor: ColorPallets.themeColor,
+                          labelPadding: EdgeInsets.symmetric(
+                              horizontal: _ui.widthPercent(26),
+                              vertical: _ui.heightPercent(0.8)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          label: Text(
+                            'Get Started',
+                            style: Styles.getstyle(
+                                fontsize: _ui.widthPercent(5),
+                                fontweight: FontWeight.w800,
+                                fontcolor: ColorPallets.white),
+                          ),
                         ),
                       ),
                     ),

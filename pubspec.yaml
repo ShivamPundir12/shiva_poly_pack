@@ -41,12 +41,14 @@ dependencies:
   device_preview: ^1.2.0
   flutter_onboarding_slider: ^1.0.11
   iconsax: ^0.0.8
-  # sms_otp_auto_verify: ^2.2.0
   camera: ^0.11.0+2
   geolocator: ^9.0.2
   shared_preferences: ^2.1.0
   permission_handler: ^11.3.1
   intl: ^0.19.0
+  pinput: ^5.0.0
+  get_storage: ^2.1.1
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:

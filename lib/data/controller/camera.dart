@@ -5,11 +5,13 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shiva_poly_pack/data/controller/new_leads.dart';
 import 'package:shiva_poly_pack/data/injection/permission.dart';
 import 'package:shiva_poly_pack/data/model/tacker.dart';
 import 'package:shiva_poly_pack/routes/app_routes.dart';
 
 class UploadPictureController extends GetxController {
+  final NewLeadsController _leadsController = Get.find<NewLeadsController>();
   late CameraController cameraController;
   RxBool isCameraInitialized = false.obs;
   RxString imagePath = ''.obs;
@@ -41,17 +43,22 @@ class UploadPictureController extends GetxController {
   Future<void> navigate({required String card_name}) async {
     switch (card_name) {
       case 'New Leads':
+        Get.toNamed(Routes.new_leads);
         break;
       case 'Pending Files':
+        Get.toNamed(Routes.pending_files);
         break;
       case 'Follow Ups':
         Get.toNamed(Routes.follow_up);
         break;
       case 'Add New Customer':
+        Get.toNamed(Routes.add_new_cus);
         break;
       case 'List':
+        Get.toNamed(Routes.crm_list);
         break;
       case 'Final Customer':
+        Get.toNamed(Routes.final_cus);
         break;
       default:
     }

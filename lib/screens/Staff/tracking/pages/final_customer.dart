@@ -9,7 +9,7 @@ import 'package:shiva_poly_pack/screens/Staff/tracking/pages/material/follow_up_
 
 import '../../../../data/model/follow_up.dart';
 
-class FollowUpScreen extends GetView<FollowUp> {
+class FinalCustomer extends GetView<FollowUp> {
   final List<FollowUpItem> items = [
     FollowUpItem(
       location: 'Malerkotla',
@@ -47,14 +47,15 @@ class FollowUpScreen extends GetView<FollowUp> {
       appBar: AppBar(
         backgroundColor: ColorPallets.white,
         bottom: PreferredSize(
-            preferredSize: Size(_ui.widthPercent(70), _ui.heightPercent(2)),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: _ui.widthPercent(5)),
-              child: Divider(
-                color: Colors.grey.shade400,
-                thickness: 2.3,
-              ),
-            )),
+          preferredSize: Size(_ui.widthPercent(70), _ui.heightPercent(2)),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: _ui.widthPercent(5)),
+            child: Divider(
+              color: Colors.grey.shade400,
+              thickness: 2.3,
+            ),
+          ),
+        ),
         centerTitle: true,
         title: Text(
           'Follow Ups',

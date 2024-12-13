@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:shiva_poly_pack/data/controller/follow_up.dart';
-import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
-import 'package:shiva_poly_pack/screens/Staff/tracking/pages/material/follow_up_card.dart';
+import 'package:shiva_poly_pack/screens/Staff/tracking/pages/material/pending_files_card.dart';
 
 import '../../../../data/model/follow_up.dart';
+import '../../../../material/color_pallets.dart';
+import 'material/follow_up_card.dart';
 
-class FollowUpScreen extends GetView<FollowUp> {
+class PendingFile extends StatelessWidget {
+  PendingFile({super.key});
   final List<FollowUpItem> items = [
     FollowUpItem(
       location: 'Malerkotla',
@@ -18,8 +19,8 @@ class FollowUpScreen extends GetView<FollowUp> {
       date: '12-02-2024',
     ),
     FollowUpItem(
-      location: 'Ahmedgarh, Mandi',
-      name: 'Advisory',
+      location: 'Adisoy',
+      name: 'Ahmedgarh, Mandi',
       phoneNumber: '8532009697',
       date: '11-26-2024',
     ),
@@ -37,29 +38,33 @@ class FollowUpScreen extends GetView<FollowUp> {
     ),
     // ... other items
   ];
+
   @override
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
     return Scaffold(
       backgroundColor: ColorPallets.white,
-      extendBody: false,
-      extendBodyBehindAppBar: false,
       appBar: AppBar(
         backgroundColor: ColorPallets.white,
         bottom: PreferredSize(
-            preferredSize: Size(_ui.widthPercent(70), _ui.heightPercent(2)),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: _ui.widthPercent(5)),
-              child: Divider(
-                color: Colors.grey.shade400,
-                thickness: 2.3,
-              ),
-            )),
+          preferredSize: Size(
+            _ui.widthPercent(100),
+            _ui.heightPercent(2),
+          ),
+          child: Divider(
+            indent: _ui.widthPercent(6),
+            endIndent: _ui.widthPercent(6),
+            color: Colors.grey.shade400,
+            thickness: 1.2,
+          ),
+        ),
         centerTitle: true,
         title: Text(
-          'Follow Ups',
+          'Pending Files',
           style: Styles.getstyle(
-              fontweight: FontWeight.bold, fontsize: _ui.widthPercent(6)),
+            fontweight: FontWeight.bold,
+            fontsize: _ui.widthPercent(6),
+          ),
         ),
         leading: IconButton(
           padding: EdgeInsets.only(
@@ -118,7 +123,7 @@ class FollowUpScreen extends GetView<FollowUp> {
                         InkWell(
                           borderRadius: BorderRadius.circular(14),
                           radius: _ui.widthPercent(1),
-                          onTap: () => controller.selectOption(context),
+                          onTap: () {},
                           child: Card(
                             shape: RoundedRectangleBorder(
                               side: BorderSide(
@@ -142,13 +147,11 @@ class FollowUpScreen extends GetView<FollowUp> {
                                     MainAxisAlignment.spaceAround,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Obx(
-                                    () => Text(
-                                      controller.selectedOption.toString(),
-                                      style: Styles.getstyle(
-                                          fontweight: FontWeight.bold,
-                                          fontsize: _ui.widthPercent(6)),
-                                    ),
+                                  Text(
+                                    'A-Z',
+                                    style: Styles.getstyle(
+                                        fontweight: FontWeight.bold,
+                                        fontsize: _ui.widthPercent(6)),
                                   ),
                                   SvgPicture.asset(
                                     'assets/icons/sort.svg',
@@ -178,7 +181,7 @@ class FollowUpScreen extends GetView<FollowUp> {
                   final item = items[index];
                   return Padding(
                     padding: EdgeInsets.only(bottom: _ui.heightPercent(0.4)),
-                    child: FollowUpCard(item: item),
+                    child: PendingFilesCard(item: item),
                   );
                 },
               ),

@@ -36,7 +36,9 @@ class UploadPictureScreen extends GetView<UploadPictureController> {
     ResponsiveUI _ui = ResponsiveUI(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         centerTitle: true,
         title: Text(
           'CRM',
@@ -48,7 +50,7 @@ class UploadPictureScreen extends GetView<UploadPictureController> {
       floatingActionButton: Container(
         height: _ui.heightPercent(12),
         width: _ui.widthPercent(15),
-        margin: EdgeInsets.only(top: _ui.heightPercent(3.8)),
+        margin: EdgeInsets.only(top: _ui.heightPercent(3.9)),
         child: FloatingActionButton(
           shape: CircleBorder(),
           backgroundColor: ColorPallets.themeColor2,
@@ -65,18 +67,10 @@ class UploadPictureScreen extends GetView<UploadPictureController> {
         color: ColorPallets.themeColor2,
         shape: CurvedNotchedRectangle(),
         notchMargin: 18.0,
-        child: SizedBox(
-          height: _ui.heightPercent(6),
-          width: _ui.widthPercent(18),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [],
-          ),
-        ),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
-            vertical: _ui.heightPercent(4), horizontal: _ui.widthPercent(3)),
+            vertical: _ui.heightPercent(1), horizontal: _ui.widthPercent(3)),
         child: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
