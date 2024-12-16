@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shiva_poly_pack/data/controller/pending_files.dart';
+import 'package:shiva_poly_pack/data/model/pending_files.dart';
+import 'package:shiva_poly_pack/routes/app_routes.dart';
 
 import '../../../../../data/model/follow_up.dart';
 import '../../../../../material/color_pallets.dart';
@@ -10,13 +14,13 @@ import '../../../../../material/styles.dart';
 
 class PendingFilesCard extends StatelessWidget {
   PendingFilesCard({super.key, required this.item});
-  final FollowUpItem item;
+  final PendingFile item;
 
   @override
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
-    DateTime _timeNow = DateTime.now();
-    String _time = DateFormat('hh:mm:ss a').format(_timeNow);
+    final PendingFilesController _controller =
+        Get.find<PendingFilesController>();
 
     return Card(
       elevation: 2,
@@ -72,7 +76,7 @@ class PendingFilesCard extends StatelessWidget {
                       ],
                     ),
                     InkWell(
-                      onTap: () {},
+                      onTap: () => Get.toNamed(Routes.add_new_cus),
                       child: Icon(
                         Icons.edit,
                         color: ColorPallets.white,
@@ -95,8 +99,9 @@ class PendingFilesCard extends StatelessWidget {
                       Text(
                         item.name,
                         style: Styles.getstyle(
-                            fontsize: _ui.widthPercent(5),
-                            fontweight: FontWeight.w700),
+                          fontsize: _ui.widthPercent(5),
+                          fontweight: FontWeight.w700,
+                        ),
                       ),
                       Text(
                         item.phoneNumber,
@@ -114,7 +119,7 @@ class PendingFilesCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        item.date,
+                        _controller.date.value,
                         style: Styles.getstyle(
                             fontsize: _ui.widthPercent(4),
                             fontcolor: ColorPallets.fadegrey,
@@ -124,7 +129,7 @@ class PendingFilesCard extends StatelessWidget {
                         height: _ui.heightPercent(1),
                       ),
                       Text(
-                        _time,
+                        _controller.time.value,
                         style: Styles.getstyle(
                             fontsize: _ui.widthPercent(3.5),
                             fontcolor: ColorPallets.fadegrey,

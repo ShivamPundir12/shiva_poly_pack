@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shiva_poly_pack/data/controller/account_type.dart';
 
 import '../../../../../data/model/follow_up.dart';
 import '../../../../../material/color_pallets.dart';
@@ -9,7 +10,7 @@ import '../../../../../material/styles.dart';
 
 class FollowUpCard extends StatelessWidget {
   FollowUpCard({super.key, required this.item});
-  final FollowUpItem item;
+  final FollowupModel item;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +61,7 @@ class FollowUpCard extends StatelessWidget {
                           width: _ui.widthPercent(3),
                         ),
                         Text(
-                          item.location,
+                          item.location.toString(),
                           style: Styles.getstyle(
                             fontweight: FontWeight.w600,
                             fontcolor: ColorPallets.white,
@@ -93,7 +94,7 @@ class FollowUpCard extends StatelessWidget {
                             fontweight: FontWeight.w700),
                       ),
                       Text(
-                        item.phoneNumber,
+                        "Tag: ${item.tagsId?.first}",
                         style: Styles.getstyle(
                             fontsize: 18,
                             fontcolor: ColorPallets.fadegrey2,
@@ -108,7 +109,7 @@ class FollowUpCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        item.date,
+                        item.createdDate.toString().replaceRange(11, 26, ''),
                         style: Styles.getstyle(
                             fontsize: _ui.widthPercent(4),
                             fontcolor: ColorPallets.fadegrey,

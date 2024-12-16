@@ -12,23 +12,25 @@ class AccountTypeController extends GetxController {
   RxBool isCustomer = true.obs;
   ApiService _apiService = ApiService();
 
-  final SingInController _singInController = Get.find<SingInController>();
+  final SingInController _singInController = Get.put(SingInController());
   late var request;
 
   Future<void> choosed_type({required bool customerLogin}) async {
     if (customerLogin) {
       isCustomer.value = true;
       isStaff.value = false;
-      request = await LoginRequest(
-          phonenumber: _singInController.contactController.text,
-          isStaff: isStaff.value);
+      // request = await LoginRequest(
+      //   phonenumber: _singInController.contactController.text,
+      //   isStaff: isStaff.value,
+      // );
       update();
     } else {
       isStaff.value = true;
       isCustomer.value = false;
-      request = await LoginRequest(
-          phonenumber: _singInController.contactController.text,
-          isStaff: isStaff.value);
+      // request = await LoginRequest(
+      //     phonenumber: _singInController.contactController.text,
+      //     isStaff: isStaff.value);
+      Get.offNamed(Routes.sigin);
       update();
     }
   }
@@ -47,7 +49,7 @@ class AccountTypeController extends GetxController {
   Future<void> navigation() async {
     if (isStaff.value) {
       LoadingView.show();
-      await sendRequest();
+      await choosed_type(customerLogin: false);
     } else {
       Get.snackbar('Info',
           'Customer Portal is under progress! \nwill be available soon.');

@@ -1,29 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shiva_poly_pack/data/controller/add_new_customer.dart';
+import 'package:shiva_poly_pack/data/model/tag_list.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 
 import '../../../../material/styles.dart';
 
 class AddCustomerScreen extends GetView<AddCustomerController> {
-  AddCustomerScreen(
-      {Key? key,
-      this.selectedBusinessType,
-      this.selectedTag,
-      this.selectedAgent})
-      : super(key: key);
-
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController contactController = TextEditingController();
-  final TextEditingController altContactController = TextEditingController();
-  final TextEditingController locationController = TextEditingController();
-  final TextEditingController followUpController = TextEditingController();
-  final TextEditingController remarksController = TextEditingController();
-
-  final String? selectedBusinessType;
-  final String? selectedTag;
-  final String? selectedAgent;
+  AddCustomerScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -68,14 +53,47 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            buildTextField('Name', 'John Doe', controller.nameController),
+            buildTextField('Name', 'John Doe', controller.nameController, true),
             buildRowFields(_ui.screenWidth),
-            buildDropdownField('Business Type', ['Retail', 'Wholesale'],
-                controller.selectedBusinessType),
-            buildDropdownField(
-                'Tags', ['VIP', 'Regular'], controller.selectedTag),
-            buildDropdownField(
-                'Agent', ['Agent 1', 'Agent 2'], controller.selectedAgent),
+            Obx(
+              () => buildTagSelectionField(
+                controller: controller.bussinessController,
+                label: "Business Type",
+                isRequired: true,
+                isBusiness: true,
+                options: controller.businesstagList,
+                selectedTagId: controller.selectedBTagId.value,
+                onTagSelected: (int id) {
+                  controller.onTagSelected(id, true);
+                },
+              ),
+            ),
+            Obx(
+              () => buildTagSelectionField(
+                controller: controller.tagsController,
+                label: "Tags",
+                isRequired: true,
+                isBusiness: true,
+                options: controller.tagList,
+                selectedTagId: controller.selectedTagId.value,
+                onTagSelected: (int id) {
+                  controller.onTagSelected(id, true);
+                },
+              ),
+            ),
+            Obx(
+              () => buildTagSelectionField(
+                label: "Agent",
+                controller: controller.agentController,
+                isRequired: false,
+                isBusiness: true,
+                options: controller.tagList,
+                selectedTagId: controller.selectedATagId.value,
+                onTagSelected: (int id) {
+                  controller.onTagSelected(id, true);
+                },
+              ),
+            ),
             buildDatePickerField(context),
             buildRemarksField(),
             const SizedBox(height: 20),
@@ -87,27 +105,42 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
   }
 
   // Text Field Widget
-  Widget buildTextField(
-      String label, String hint, TextEditingController controller) {
+  Widget buildTextField(String label, String hint,
+      TextEditingController controller, bool isReqquired) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        fit: StackFit.loose,
+        alignment: Alignment.topRight,
         children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 4),
-          TextFormField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: Styles.getstyle(
-                fontcolor: ColorPallets.fadegrey.withOpacity(0.6),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(height: 4),
+              TextFormField(
+                controller: controller,
+                decoration: InputDecoration(
+                  hintText: hint,
+                  hintStyle: Styles.getstyle(
+                    fontcolor: ColorPallets.fadegrey.withOpacity(0.6),
+                  ),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
               ),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-            ),
+            ],
           ),
+          if (isReqquired)
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Text(
+                '*',
+                style: Styles.getstyle(
+                    fontweight: FontWeight.bold, fontcolor: Colors.red),
+              ),
+            )
         ],
       ),
     );
@@ -119,49 +152,118 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
       children: [
         Expanded(
           child: buildTextField(
-              'Contact', 'Enter contact', controller.contactController),
+              'Contact', 'Enter contact', controller.contactController, true),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: buildTextField('Alternative No.', 'Enter alt no.',
-              controller.altContactController),
+              controller.altContactController, false),
         ),
       ],
     );
   }
 
   // Dropdown Field Widget
-  Widget buildDropdownField(
-      String label, List<String> options, RxnString selectedValue) {
+  Widget buildTagSelectionField({
+    required String label,
+    required bool isBusiness,
+    required List<Tag> options,
+    required int selectedTagId,
+    required bool isRequired,
+    required TextEditingController controller,
+    required Function(int) onTagSelected,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        fit: StackFit.loose,
+        alignment: Alignment.topRight,
         children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 4),
-          Obx(() => DropdownButtonFormField<String>(
-                value: selectedValue.value,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                ),
-                hint: Text(
-                  'Choose anything',
-                  style: Styles.getstyle(
-                      fontcolor: ColorPallets.fadegrey.withOpacity(0.6)),
-                ),
-                items: options
-                    .map((option) =>
-                        DropdownMenuItem(value: option, child: Text(option)))
-                    .toList(),
-                onChanged: (value) {
-                  selectedValue.value = value;
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(height: 4),
+              TextFormField(
+                readOnly: true,
+                onTap: () {
+                  _showTagSelectionBottomSheet(
+                    options: options,
+                    isBusiness: isBusiness,
+                    onTagSelected: onTagSelected,
+                  );
                 },
-              )),
+                controller: controller,
+                decoration: InputDecoration(
+                  hintText: 'Select $label',
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 10,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (isRequired)
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Text(
+                '*',
+                style: Styles.getstyle(
+                    fontweight: FontWeight.bold, fontcolor: Colors.red),
+              ),
+            )
         ],
       ),
+    );
+  }
+
+// BottomSheet for tag selection
+  void _showTagSelectionBottomSheet({
+    required List<Tag> options,
+    required bool isBusiness,
+    required Function(int) onTagSelected,
+  }) {
+    Get.bottomSheet(
+      Container(
+        height: 300,
+        padding: const EdgeInsets.all(8.0),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Select a tag',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const Divider(),
+            Expanded(
+              child: ListView.builder(
+                itemCount: options.length,
+                itemBuilder: (context, index) {
+                  final tag = options[index];
+                  return ListTile(
+                    title: Text(tag.name),
+                    onTap: () {
+                      onTagSelected(tag.id); // Pass selected tag ID
+                      controller.onTagNameSelected(tag.name, tag.isBusinessTag);
+                      Get.back(); // Close BottomSheet
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      isScrollControlled: true,
     );
   }
 
@@ -169,29 +271,43 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
   Widget buildDatePickerField(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        fit: StackFit.loose,
+        alignment: Alignment.topRight,
         children: [
-          const Text('Follow up Date',
-              style: TextStyle(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 4),
-          TextFormField(
-            controller: controller.followUpDateController,
-            readOnly: true,
-            decoration: InputDecoration(
-              hintText: 'dd/mm/yyyy',
-              hintStyle: Styles.getstyle(
-                fontcolor: ColorPallets.fadegrey.withOpacity(0.6),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Follow up Date',
+                  style: TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(height: 4),
+              TextFormField(
+                controller: controller.followUpDateController,
+                readOnly: true,
+                decoration: InputDecoration(
+                  hintText: 'dd/mm/yyyy',
+                  hintStyle: Styles.getstyle(
+                    fontcolor: ColorPallets.fadegrey.withOpacity(0.6),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.calendar_today),
+                    onPressed: () => controller.selectDate(context),
+                  ),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
               ),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.calendar_today),
-                onPressed: () => controller.selectDate(context),
-              ),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-            ),
+            ],
           ),
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: Text(
+              '*',
+              style: Styles.getstyle(
+                  fontweight: FontWeight.bold, fontcolor: Colors.red),
+            ),
+          )
         ],
       ),
     );
@@ -199,8 +315,8 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
 
   // Remarks Field
   Widget buildRemarksField() {
-    return buildTextField(
-        'Additional Note/Remarks', 'Say it', controller.remarksController);
+    return buildTextField('Additional Note/Remarks', 'Say it',
+        controller.remarksController, false);
   }
 
   // Save Button

@@ -1,3 +1,19 @@
+class PendingFilesResponse {
+  final String message;
+  final List<dynamic> pendingFiles;
+
+  PendingFilesResponse({required this.message, required this.pendingFiles});
+
+  factory PendingFilesResponse.fromJson(Map<String, dynamic> json) {
+    return PendingFilesResponse(
+      message: json['message'],
+      pendingFiles: (json['data'] as List<dynamic>)
+          .map((item) => PendingFile.fromJson(item))
+          .toList(),
+    );
+  }
+}
+
 class PendingFile {
   final int id;
   final String name;

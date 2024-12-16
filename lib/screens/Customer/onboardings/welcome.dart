@@ -85,7 +85,7 @@ class WelcomeScreen extends StatelessWidget {
                           fontcolor: ColorPallets.fadegrey2),
                     ),
                     InkWell(
-                      onTap: () => Get.toNamed(Routes.sigin),
+                      onTap: () => Get.toNamed(Routes.account_typ),
                       child: Container(
                         height: _ui.heightPercent(12),
                         alignment: Alignment.bottomLeft,

@@ -9,6 +9,7 @@ import 'package:shiva_poly_pack/data/controller/m_pin.dart';
 import 'package:shiva_poly_pack/data/controller/my_app.dart';
 import 'package:shiva_poly_pack/data/controller/new_leads.dart';
 import 'package:shiva_poly_pack/data/controller/onboarding.dart';
+import 'package:shiva_poly_pack/data/controller/pending_files.dart';
 import 'package:shiva_poly_pack/data/controller/preview_cntrl.dart';
 import 'package:shiva_poly_pack/data/controller/sing_in.dart';
 
@@ -20,6 +21,7 @@ class RootBinding implements Bindings {
       permanent: true,
     );
     Get.put(NewLeadsController());
+    Get.put(PendingFilesController());
     Get.put(SingInController());
     Get.put(OnboardingController());
     Get.put(UploadPictureController());

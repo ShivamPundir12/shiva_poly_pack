@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shiva_poly_pack/data/controller/account_type.dart';
+import 'package:shiva_poly_pack/data/controller/local_storage.dart';
 import 'package:shiva_poly_pack/data/model/login.dart';
 import 'package:shiva_poly_pack/data/services/api_service.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
 import 'package:shiva_poly_pack/routes/app_routes.dart';
+
+import '../../material/indicator.dart';
 
 class SingInController extends GetxController {
   final contactController = TextEditingController();
@@ -12,19 +16,44 @@ class SingInController extends GetxController {
   final formKey = GlobalKey<FormState>().obs;
   final otpFormKey = GlobalKey<FormState>().obs;
   RxBool isStaff = false.obs;
+  ApiService _apiService = ApiService();
 
   Future<void> goToOtp() async {
     if (formKey.value.currentState!.validate()) {
       if (contactController.value.text.isNotEmpty) {
-        Get.offNamed(Routes.otp, preventDuplicates: true);
+        sendRequest();
+        // Get.offNamed(Routes.otp, preventDuplicates: true);
       }
     }
+  }
+
+  Future<void> isRegistered() async {}
+
+  Future<void> sendRequest() async {
+    LoadingView.show();
+    final request = await LoginRequest(
+      phonenumber: contactController.text,
+      isStaff: true,
+    );
+    await _apiService.login(request).then((v) async {
+      if (v?.token != null) {
+        await LocalStorageManager.saveData('token', v?.token.toString());
+        await LocalStorageManager.saveData('userId', v?.user.id.toString());
+        Get.offNamedUntil(Routes.otp, (route) => false);
+        LoadingView.hide();
+      } else {
+        Get.snackbar('Info', 'This number is not registered to our services!',
+            colorText: ColorPallets.white);
+        LoadingView.hide();
+      }
+    });
   }
 
   Future<void> goToType() async {
     if (otpFormKey.value.currentState!.validate()) {
       if (otpController.value.text == '1234') {
-        Get.offNamed(Routes.account_typ, preventDuplicates: true);
+        // await sendRequest();
+        Get.offNamed(Routes.m_pin, preventDuplicates: true);
       } else {
         Get.snackbar(
           'Error',

@@ -77,8 +77,4 @@ class NewLeadsController extends GetxController
     return leads;
   }
 
-  // Future<void> setResponse() async {
-  //   leadsResponse.value = await getApiData();
-  //   update();
-  // }
 }

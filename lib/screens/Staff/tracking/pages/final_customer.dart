@@ -179,7 +179,7 @@ class FinalCustomer extends GetView<FollowUp> {
                   final item = items[index];
                   return Padding(
                     padding: EdgeInsets.only(bottom: _ui.heightPercent(0.4)),
-                    child: FollowUpCard(item: item),
+                    child: Card(),
                   );
                 },
               ),

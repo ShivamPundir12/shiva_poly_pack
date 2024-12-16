@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:shiva_poly_pack/data/controller/follow_up.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
+import 'package:shiva_poly_pack/material/follow_up_dialoge.dart';
+import 'package:shiva_poly_pack/material/indicator.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
 import 'package:shiva_poly_pack/screens/Staff/tracking/pages/material/follow_up_card.dart';
@@ -35,7 +38,6 @@ class FollowUpScreen extends GetView<FollowUp> {
       phoneNumber: '9058377960',
       date: '31-03-2024',
     ),
-    // ... other items
   ];
   @override
   Widget build(BuildContext context) {
@@ -44,6 +46,14 @@ class FollowUpScreen extends GetView<FollowUp> {
       backgroundColor: ColorPallets.white,
       extendBody: false,
       extendBodyBehindAppBar: false,
+      floatingActionButton: FloatingActionButton.small(
+        onPressed: () => FollowupDialog.showFollowUpDialog(context),
+        backgroundColor: ColorPallets.themeColor,
+        child: Icon(
+          Iconsax.add,
+          color: ColorPallets.white,
+        ),
+      ),
       appBar: AppBar(
         backgroundColor: ColorPallets.white,
         bottom: PreferredSize(
@@ -171,37 +181,72 @@ class FollowUpScreen extends GetView<FollowUp> {
               ],
             ),
             SizedBox(height: 16.0),
-            Expanded(
-              child: ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: _ui.heightPercent(0.4)),
-                    child: FollowUpCard(item: item),
-                  );
-                },
+            FutureBuilder<FollowUpResponse>(
+                future: controller.getApiData(),
+                builder: (context, snapshot) {
+                  final data = snapshot.data;
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return ProgressIndicatorWidget(
+                      color: ColorPallets.themeColor,
+                    );
+                  } else if (data?.followUp == null) {
+                    return Container(
+                      height: _ui.screenHeight / 1.9,
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.cloud_off,
+                            size: _ui.heightPercent(14),
+                            color: ColorPallets.themeColor,
+                          ),
+                          Text(
+                            'No Data..',
+                            style: Styles.getstyle(
+                              fontweight: FontWeight.w600,
+                              fontsize: _ui.widthPercent(5),
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Expanded(
+                      child: ListView.builder(
+                        itemCount: controller.followUpList.length,
+                        itemBuilder: (context, index) {
+                          final item = controller.followUpList[index];
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              bottom: _ui.heightPercent(0.4),
+                            ),
+                            child: FollowUpCard(item: item),
+                          );
+                        },
+                      ),
+                    );
+                  }
+                }),
+            if (controller.followUpList.isNotEmpty)
+              // Pagination controls
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.chevron_left),
+                    onPressed: () {},
+                  ),
+                  Text('1 2 ... 99'),
+                  IconButton(
+                    icon: Icon(Icons.chevron_right),
+                    onPressed: () {
+                      // Implement next page logic
+                    },
+                  ),
+                ],
               ),
-            ),
-            // Pagination controls
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.chevron_left),
-                  onPressed: () {
-                    // Implement previous page logic
-                  },
-                ),
-                Text('1 2 ... 99'),
-                IconButton(
-                  icon: Icon(Icons.chevron_right),
-                  onPressed: () {
-                    // Implement next page logic
-                  },
-                ),
-              ],
-            ),
           ],
         ),
       ),

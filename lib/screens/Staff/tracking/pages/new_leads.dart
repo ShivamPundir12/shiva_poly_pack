@@ -10,7 +10,6 @@ import 'package:shiva_poly_pack/screens/Staff/tracking/pages/material/new_leads_
 import '../../../../data/model/follow_up.dart';
 import '../../../../material/color_pallets.dart';
 import '../../../../material/styles.dart';
-import 'material/follow_up_card.dart';
 
 class NewLeads extends GetView<NewLeadsController> {
   NewLeads({super.key});

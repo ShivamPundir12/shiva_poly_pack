@@ -14,7 +14,7 @@ void main() async {
   ));
   WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((c) async {
     requestPermissions();
-    // LocalStorageManager.printAllStoredData();
+    LocalStorageManager.clearAllData();
   });
 }
 

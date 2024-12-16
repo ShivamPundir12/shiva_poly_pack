@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:shiva_poly_pack/data/controller/pending_files.dart';
+import 'package:shiva_poly_pack/material/indicator.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
 import 'package:shiva_poly_pack/screens/Staff/tracking/pages/material/pending_files_card.dart';
 
 import '../../../../data/model/follow_up.dart';
 import '../../../../material/color_pallets.dart';
-import 'material/follow_up_card.dart';
 
-class PendingFile extends StatelessWidget {
+class PendingFile extends GetView<PendingFilesController> {
   PendingFile({super.key});
   final List<FollowUpItem> items = [
     FollowUpItem(
@@ -123,7 +124,7 @@ class PendingFile extends StatelessWidget {
                         InkWell(
                           borderRadius: BorderRadius.circular(14),
                           radius: _ui.widthPercent(1),
-                          onTap: () {},
+                          onTap: () => controller.selectOption(context),
                           child: Card(
                             shape: RoundedRectangleBorder(
                               side: BorderSide(
@@ -147,11 +148,13 @@ class PendingFile extends StatelessWidget {
                                     MainAxisAlignment.spaceAround,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    'A-Z',
-                                    style: Styles.getstyle(
-                                        fontweight: FontWeight.bold,
-                                        fontsize: _ui.widthPercent(6)),
+                                  Obx(
+                                    () => Text(
+                                      controller.selectedOption.value,
+                                      style: Styles.getstyle(
+                                          fontweight: FontWeight.bold,
+                                          fontsize: _ui.widthPercent(6)),
+                                    ),
                                   ),
                                   SvgPicture.asset(
                                     'assets/icons/sort.svg',
@@ -174,18 +177,32 @@ class PendingFile extends StatelessWidget {
               ],
             ),
             SizedBox(height: 16.0),
-            Expanded(
-              child: ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: _ui.heightPercent(0.4)),
-                    child: PendingFilesCard(item: item),
-                  );
-                },
-              ),
-            ),
+            FutureBuilder<dynamic>(
+                future: controller.getApiData(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return ProgressIndicatorWidget(
+                      color: ColorPallets.themeColor,
+                    );
+                  } else {
+                    return Expanded(
+                      child: Obx(
+                        () => ListView.builder(
+                          itemCount: controller.pendingFilesList.length,
+                          itemBuilder: (context, index) {
+                            final item = controller.pendingFilesList[index];
+                            controller.formatDate(item.createdDate.toString());
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                  bottom: _ui.heightPercent(0.4)),
+                              child: PendingFilesCard(item: item),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  }
+                }),
             // Pagination controls
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
