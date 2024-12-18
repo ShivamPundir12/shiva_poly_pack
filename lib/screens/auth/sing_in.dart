@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:pinput/pinput.dart';
 import 'package:shiva_poly_pack/data/controller/sing_in.dart';
 import 'package:shiva_poly_pack/data/services/validation.dart';
@@ -17,6 +18,10 @@ class SignIn extends GetView<SingInController> {
   @override
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
+    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
+
+    FocusNode focusNode = FocusNode();
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: ColorPallets.themeColor,
@@ -31,7 +36,8 @@ class SignIn extends GetView<SingInController> {
             ),
           ),
         ),
-        height: _ui.heightPercent(82),
+        height:
+            isKeyboardVisible ? _ui.heightPercent(89) : _ui.heightPercent(82),
         width: _ui.screenWidth,
         child: Obx(
           () => Form(
@@ -116,7 +122,13 @@ class SignIn extends GetView<SingInController> {
                               height: _ui.heightPercent(1.2),
                             ),
                             TextFormField(
+                              maxLength: 10,
                               controller: controller.contactController,
+                              onTap: controller.ontapped,
+                              focusNode: focusNode,
+                              onChanged: (value) {
+                                print('object');
+                              },
                               validator: ValidationService.validateMobileNumber,
                               keyboardType: TextInputType.phone,
                               decoration: InputDecoration(

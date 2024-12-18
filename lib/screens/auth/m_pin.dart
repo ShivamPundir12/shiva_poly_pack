@@ -42,14 +42,24 @@ class MPin extends GetView<MPinController> {
   @override
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
+    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: ColorPallets.themeColor,
       bottomSheet: Container(
-        color: ColorPallets.white2,
-        height: _ui.heightPercent(82),
+        height:
+            isKeyboardVisible ? _ui.heightPercent(89) : _ui.heightPercent(82),
         width: _ui.screenWidth,
+        decoration: ShapeDecoration(
+          color: ColorPallets.white2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topRight: Radius.circular(27),
+              topLeft: Radius.circular(27),
+            ),
+          ),
+        ),
         child: Form(
           key: controller.mpinFormKey.value,
           child: Column(

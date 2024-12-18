@@ -114,20 +114,24 @@ class CustomerData {
   // Factory method to parse JSON to CustomerData
   factory CustomerData.fromJson(Map<String, dynamic> json) {
     return CustomerData(
-      id: json['id'],
-      name: json['name'],
-      phoneNumber: json['phoneNumber'],
-      alternateNumber: json['alternateNumber'],
-      location: json['location'],
-      tagsId: List<String>.from(jsonDecode(json['tagsId'])),
-      businessTypeTagsId:
-          List<String>.from(jsonDecode(json['businessTypeTagsId'])),
-      agentId: json['agentId'],
-      userId: json['userId'],
-      followUpDate: json['followUpDate'],
-      additionalNote: json['additionalNote'],
-      createdDate: json['createdDate'],
-      isFinalCustomer: json['isFinalCustomer'],
+      id: json['id'] as int,
+      name: json['name'] as String,
+      phoneNumber: json['phoneNumber'] as String,
+      alternateNumber: json['alternateNumber'] ?? '',
+      location: json['location'] as String,
+      tagsId: json['tagsId'] != null && json['tagsId'].isNotEmpty
+          ? List<String>.from(jsonDecode(json['tagsId']))
+          : [],
+      businessTypeTagsId: json['businessTypeTagsId'] != null &&
+              json['businessTypeTagsId'].isNotEmpty
+          ? List<String>.from(jsonDecode(json['businessTypeTagsId']))
+          : [],
+      agentId: json['agentId'] != null ? json['agentId'] as int : 0,
+      userId: json['userId'] as String,
+      followUpDate: json['followUpDate'] ?? '',
+      additionalNote: json['additionalNote'] ?? '',
+      createdDate: json['createdDate'] ?? '',
+      isFinalCustomer: json['isFinalCustomer'] as bool?,
     );
   }
 
@@ -139,8 +143,9 @@ class CustomerData {
       'phoneNumber': phoneNumber,
       'alternateNumber': alternateNumber,
       'location': location,
-      'tagsId': jsonEncode(tagsId),
-      'businessTypeTagsId': jsonEncode(businessTypeTagsId),
+      'tagsId': tagsId.isNotEmpty ? jsonEncode(tagsId) : '[]',
+      'businessTypeTagsId':
+          businessTypeTagsId.isNotEmpty ? jsonEncode(businessTypeTagsId) : '[]',
       'agentId': agentId,
       'userId': userId,
       'followUpDate': followUpDate,

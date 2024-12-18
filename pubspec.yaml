@@ -49,6 +49,7 @@ dependencies:
   pinput: ^5.0.0
   get_storage: ^2.1.1
   http: ^1.2.2
+  simple_chips_input: ^1.2.0
 
 dev_dependencies:
   flutter_test:

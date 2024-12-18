@@ -48,6 +48,29 @@ class MPinController extends GetxController {
           );
         }
       });
+    } else {
+      Get.snackbar(
+        'Error',
+        'Please enter the MPIN!',
+        colorText: ColorPallets.white,
+        messageText: Text(
+          'Please enter the MPIN!',
+          style: Styles.getstyle(
+            fontcolor: ColorPallets.white,
+            fontweight: FontWeight.bold,
+            fontsize: 18,
+          ),
+        ),
+        backgroundColor: ColorPallets.themeColor2,
+        titleText: Text(
+          'Error',
+          style: Styles.getstyle(
+            fontcolor: Colors.red,
+            fontweight: FontWeight.bold,
+            fontsize: 16,
+          ),
+        ),
+      );
     }
   }
 

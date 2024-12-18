@@ -8,7 +8,6 @@ import 'package:shiva_poly_pack/material/buttons.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
-import 'package:shiva_poly_pack/routes/app_routes.dart';
 
 final defaultPinTheme = PinTheme(
   width: 70,
@@ -43,6 +42,7 @@ class Otp extends GetView<SingInController> {
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
     int _otpCodeLength = 4;
+    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -53,7 +53,8 @@ class Otp extends GetView<SingInController> {
       backgroundColor: ColorPallets.themeColor,
       bottomSheet: Container(
         alignment: Alignment.bottomCenter,
-        height: _ui.heightPercent(82),
+        height:
+            isKeyboardVisible ? _ui.heightPercent(89) : _ui.heightPercent(82),
         decoration: ShapeDecoration(
           color: ColorPallets.white2,
           shape: RoundedRectangleBorder(

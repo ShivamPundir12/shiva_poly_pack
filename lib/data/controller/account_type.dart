@@ -30,7 +30,6 @@ class AccountTypeController extends GetxController {
       // request = await LoginRequest(
       //     phonenumber: _singInController.contactController.text,
       //     isStaff: isStaff.value);
-      Get.offNamed(Routes.sigin);
       update();
     }
   }
@@ -49,7 +48,8 @@ class AccountTypeController extends GetxController {
   Future<void> navigation() async {
     if (isStaff.value) {
       LoadingView.show();
-      await choosed_type(customerLogin: false);
+      Get.offNamed(Routes.sigin);
+      // await choosed_type(customerLogin: false);
     } else {
       Get.snackbar('Info',
           'Customer Portal is under progress! \nwill be available soon.');

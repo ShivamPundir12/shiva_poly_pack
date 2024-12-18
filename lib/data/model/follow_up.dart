@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class FollowUpItem {
   final String location;
   final String name;
@@ -152,6 +154,59 @@ class CreateFollowupModel {
       'review': review,
       'tags': tags,
     };
+  }
+}
+
+class PostedFollowUp {
+  final String customerName;
+  final DateTime followupDate;
+  final String review;
+  final List<String> tags;
+
+  PostedFollowUp({
+    required this.customerName,
+    required this.followupDate,
+    required this.review,
+    required this.tags,
+  });
+
+  // Factory constructor to create a FollowUp object from JSON
+  factory PostedFollowUp.fromJson(Map<String, dynamic> json) {
+    return PostedFollowUp(
+      customerName: json['customerName'] as String,
+      followupDate: DateTime.parse(json['followupDate']),
+      review: json['review'] as String,
+      tags: parseTags(json['tags']),
+    );
+  }
+
+  // Convert FollowUp object back to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'customerName': customerName,
+      'followupDate': followupDate.toIso8601String(),
+      'review': review,
+      'tags': tags,
+    };
+  }
+
+  // Custom method to parse the tags field
+  static List<String> parseTags(dynamic tagsField) {
+    if (tagsField is String) {
+      try {
+        // If the string looks like a JSON array, decode it
+        final dynamic decoded = jsonDecode(tagsField);
+        if (decoded is List) {
+          return decoded.map((e) => e.toString()).toList();
+        }
+      } catch (e) {
+        // If it fails, assume it's a single tag and return it as a list
+        return [tagsField];
+      }
+    } else if (tagsField is List) {
+      return tagsField.map((e) => e.toString()).toList();
+    }
+    return [];
   }
 }
 

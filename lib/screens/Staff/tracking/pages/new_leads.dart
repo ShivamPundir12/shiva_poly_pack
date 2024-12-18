@@ -216,6 +216,31 @@ class NewLeads extends GetView<NewLeadsController> {
                             color: ColorPallets.themeColor,
                             size: _ui.widthPercent(6),
                           );
+                        } else if (snapshot
+                                .data?.leadsWithLargeCustomer.length ==
+                            0) {
+                          return Container(
+                            height: _ui.screenHeight / 1.9,
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.cloud_off,
+                                  size: _ui.heightPercent(14),
+                                  color: ColorPallets.themeColor,
+                                ),
+                                Text(
+                                  'No Data..',
+                                  style: Styles.getstyle(
+                                    fontweight: FontWeight.w600,
+                                    fontsize: _ui.widthPercent(5),
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
                         } else {
                           return Container(
                             child: Obx(
@@ -345,12 +370,36 @@ class NewLeads extends GetView<NewLeadsController> {
                   ],
                 ),
                 SizedBox(height: 16.0),
-                FutureBuilder<Object>(
+                FutureBuilder<LeadsResponse>(
                     future: controller.getApiData(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return ProgressIndicatorWidget(
                           color: ColorPallets.themeColor,
+                        );
+                      } else if (snapshot.data?.leadsWithSmallCustomer.length ==
+                          0) {
+                        return Container(
+                          height: _ui.screenHeight / 1.9,
+                          alignment: Alignment.center,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.cloud_off,
+                                size: _ui.heightPercent(14),
+                                color: ColorPallets.themeColor,
+                              ),
+                              Text(
+                                'No Data..',
+                                style: Styles.getstyle(
+                                  fontweight: FontWeight.w600,
+                                  fontsize: _ui.widthPercent(5),
+                                ),
+                              )
+                            ],
+                          ),
                         );
                       } else {
                         return Obx(

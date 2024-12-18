@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:shiva_poly_pack/data/controller/follow_up.dart';
 import 'package:shiva_poly_pack/data/controller/local_storage.dart';
 import 'package:shiva_poly_pack/data/model/follow_up.dart';
 import 'package:shiva_poly_pack/data/model/login.dart';
@@ -19,6 +20,7 @@ class ApiService {
   static const String _loginEndpoint = "/api/Account/login";
   static const String _leadsEndpoint = "/api/CRM/NewLeads";
   static const String _followUpEndpoint = "/api/CRM/GetTodayFollowUps?userId=";
+  static const String _postedfollowUpEndpoint = "/api/CRM/FollowUp?id=";
   static const String _crtfollowUpEndpoint = "/api/CRM/CreateFollowUp";
   static const String _pendingFilesEndpoint =
       "/api/CRM/GetPendingFiles?userId=";
@@ -26,6 +28,7 @@ class ApiService {
   static const String _businesstagListEndPoint =
       "/api/CRM/GetBusinessTypeTagList";
   static const String _createNewCusEndPoint = "/api/CRM/CreateCustomer";
+  static const String _getcusbyIdEndPoint = "/api/CRM/GetCustomerById?id=";
 
   // Login method
   Future<LoginResponse?> login(LoginRequest request) async {
@@ -129,6 +132,37 @@ class ApiService {
         final jsondata = json.decode(response.body);
         // final data = jsondata['data'];
         return FollowUpResponse.fromJson(jsondata);
+      } else {
+        // Handle errors
+        throw Exception(
+            "Failed to load leads. Status Code: ${response.statusCode}");
+      }
+    } catch (e) {
+      // Handle exceptions
+      throw Exception("Error occurred while fetching leads: $e");
+    }
+  }
+
+  Future<List<dynamic>> fetchPostedFollowUp(
+    String token,
+    String id,
+  ) async {
+    final url = Uri.parse(_baseUrl + _postedfollowUpEndpoint + id);
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsondata = json.decode(response.body);
+        print('DATA: $jsondata');
+        // final data = jsondata['data'];
+        return jsondata;
       } else {
         // Handle errors
         throw Exception(
@@ -251,6 +285,34 @@ class ApiService {
             "Failed to load leads. Status Code: ${response.statusCode}");
       }
     } catch (e) {
+      // Handle exceptions
+      throw Exception("Error occurred while fetching leads: $e");
+    }
+  }
+
+  Future<GetCustomerInfo> getCustomerInfo(String token, String id) async {
+    final url = Uri.parse(_baseUrl + _getcusbyIdEndPoint + id);
+    print('Token: $token');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return GetCustomerInfo.fromJson(data);
+      } else {
+        // Handle errors
+        throw Exception(
+            "Failed to load leads. Status Code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('Exception: $e');
       // Handle exceptions
       throw Exception("Error occurred while fetching leads: $e");
     }

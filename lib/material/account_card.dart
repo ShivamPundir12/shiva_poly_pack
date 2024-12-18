@@ -21,7 +21,7 @@ class AccountCard extends StatelessWidget {
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+      margin: EdgeInsets.symmetric(horizontal: _ui.widthPercent(2)),
       padding: EdgeInsets.symmetric(vertical: _ui.heightPercent(3)),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),

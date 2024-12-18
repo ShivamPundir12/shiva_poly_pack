@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shiva_poly_pack/data/controller/add_new_customer.dart';
+import 'package:shiva_poly_pack/data/model/new_customer.dart';
 import 'package:shiva_poly_pack/data/model/pending_files.dart';
 import 'package:shiva_poly_pack/data/services/api_service.dart';
+import 'package:shiva_poly_pack/routes/app_routes.dart';
 
 class PendingFilesController extends GetxController {
   var pendingFilesList = <PendingFile>[].obs;
+ 
   ApiService _apiService = ApiService();
   RxString time = ''.obs;
   RxString date = ''.obs;
   RxString selectedOption = 'Z-A'.obs;
+  // final AddCustomerController _customerController =
+  //     Get.put(AddCustomerController());
 
   void sortLeads() {
     if (selectedOption.value == 'A-Z') {
@@ -32,10 +38,11 @@ class PendingFilesController extends GetxController {
     sortLeads();
   }
 
+
+
   Future<PendingFilesResponse> getApiData() async {
     final files = await _apiService.fetchPendingFiles(getToken());
     pendingFilesList.value = files.pendingFiles as List<PendingFile>;
-
     update();
     return files;
   }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shiva_poly_pack/data/controller/add_new_customer.dart';
 import 'package:shiva_poly_pack/data/controller/pending_files.dart';
 import 'package:shiva_poly_pack/data/model/pending_files.dart';
 import 'package:shiva_poly_pack/routes/app_routes.dart';
@@ -12,15 +13,15 @@ import '../../../../../material/color_pallets.dart';
 import '../../../../../material/responsive.dart';
 import '../../../../../material/styles.dart';
 
-class PendingFilesCard extends StatelessWidget {
+class PendingFilesCard extends GetView<PendingFilesController> {
   PendingFilesCard({super.key, required this.item});
   final PendingFile item;
 
   @override
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
-    final PendingFilesController _controller =
-        Get.find<PendingFilesController>();
+    final AddCustomerController _customerController =
+        Get.find<AddCustomerController>();
 
     return Card(
       elevation: 2,
@@ -76,7 +77,8 @@ class PendingFilesCard extends StatelessWidget {
                       ],
                     ),
                     InkWell(
-                      onTap: () => Get.toNamed(Routes.add_new_cus),
+                      onTap: () =>
+                          _customerController.onEdit(item.id.toString()),
                       child: Icon(
                         Icons.edit,
                         color: ColorPallets.white,
@@ -119,7 +121,7 @@ class PendingFilesCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        _controller.date.value,
+                        controller.date.value,
                         style: Styles.getstyle(
                             fontsize: _ui.widthPercent(4),
                             fontcolor: ColorPallets.fadegrey,
@@ -129,7 +131,7 @@ class PendingFilesCard extends StatelessWidget {
                         height: _ui.heightPercent(1),
                       ),
                       Text(
-                        _controller.time.value,
+                        controller.time.value,
                         style: Styles.getstyle(
                             fontsize: _ui.widthPercent(3.5),
                             fontcolor: ColorPallets.fadegrey,

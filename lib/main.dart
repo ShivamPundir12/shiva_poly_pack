@@ -5,16 +5,19 @@ import 'package:get/get.dart';
 import 'package:shiva_poly_pack/data/controller/local_storage.dart';
 import 'package:shiva_poly_pack/data/injection/permission.dart';
 import 'package:shiva_poly_pack/data/injection/routes.dart';
+import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/routes/app_routes.dart';
 
 void main() async {
-  runApp(DevicePreview(
-    enabled: !kReleaseMode, // Enable only in debug mode
-    builder: (context) => const MyApp(),
-  ));
+  runApp(
+    DevicePreview(
+      enabled: !kReleaseMode, // Enable only in debug mode
+      builder: (context) => const MyApp(),
+    ),
+  );
   WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((c) async {
-    requestPermissions();
-    LocalStorageManager.clearAllData();
+    await requestPermissions();
+    // LocalStorageManager.clearAllData();
   });
 }
 
@@ -30,7 +33,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       getPages: AppRouter.pages,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: ColorPallets.themeColor2),
         useMaterial3: true,
       ),
     );

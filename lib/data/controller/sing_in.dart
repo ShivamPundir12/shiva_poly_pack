@@ -16,6 +16,7 @@ class SingInController extends GetxController {
   final formKey = GlobalKey<FormState>().obs;
   final otpFormKey = GlobalKey<FormState>().obs;
   RxBool isStaff = false.obs;
+  RxBool isTapped = false.obs;
   ApiService _apiService = ApiService();
 
   Future<void> goToOtp() async {
@@ -27,7 +28,10 @@ class SingInController extends GetxController {
     }
   }
 
-  Future<void> isRegistered() async {}
+  Future<void> ontapped() async {
+    isTapped.value = true;
+    update();
+  }
 
   Future<void> sendRequest() async {
     LoadingView.show();
@@ -42,9 +46,12 @@ class SingInController extends GetxController {
         Get.offNamedUntil(Routes.otp, (route) => false);
         LoadingView.hide();
       } else {
-        Get.snackbar('Info', 'This number is not registered to our services!',
-            colorText: ColorPallets.white);
         LoadingView.hide();
+        Get.snackbar(
+            backgroundColor: ColorPallets.themeColor2,
+            'Info',
+            'This number is not registered to our services!',
+            colorText: ColorPallets.white);
       }
     });
   }
@@ -78,6 +85,29 @@ class SingInController extends GetxController {
           ),
         );
       }
+    } else {
+      Get.snackbar(
+        'Error',
+        'Please enter the OTP!',
+        colorText: ColorPallets.white,
+        messageText: Text(
+          'Please enter the OTP!',
+          style: Styles.getstyle(
+            fontcolor: ColorPallets.white,
+            fontweight: FontWeight.bold,
+            fontsize: 18,
+          ),
+        ),
+        backgroundColor: ColorPallets.themeColor2,
+        titleText: Text(
+          'Error',
+          style: Styles.getstyle(
+            fontcolor: Colors.red,
+            fontweight: FontWeight.bold,
+            fontsize: 16,
+          ),
+        ),
+      );
     }
   }
 
@@ -87,6 +117,7 @@ class SingInController extends GetxController {
   void onClose() {
     // Dispose of controllers when the Controller is closed
     contactController.dispose();
+    update();
     super.onClose();
   }
 }

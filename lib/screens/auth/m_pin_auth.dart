@@ -73,10 +73,11 @@ class CheckMpin extends GetView<MPinController> {
                             TextSpan(
                               text: 'Packs',
                               style: Styles.getstyle(
-                                  fontcolor: ColorPallets.themeColor,
-                                  fontsize: _ui.widthPercent(8),
-                                  fontweight: FontWeight.bold),
-                            )
+                                fontcolor: ColorPallets.themeColor,
+                                fontsize: _ui.widthPercent(8),
+                                fontweight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                       ),

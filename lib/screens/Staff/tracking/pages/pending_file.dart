@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:shiva_poly_pack/data/controller/pending_files.dart';
+import 'package:shiva_poly_pack/data/model/pending_files.dart';
 import 'package:shiva_poly_pack/material/indicator.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
@@ -77,7 +78,7 @@ class PendingFile extends GetView<PendingFilesController> {
             size: _ui.widthPercent(7),
           ),
           onPressed: () {
-            Get.back(canPop: true);
+            Get.back();
           },
         ),
       ),
@@ -177,12 +178,35 @@ class PendingFile extends GetView<PendingFilesController> {
               ],
             ),
             SizedBox(height: 16.0),
-            FutureBuilder<dynamic>(
+            FutureBuilder<PendingFilesResponse>(
                 future: controller.getApiData(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return ProgressIndicatorWidget(
                       color: ColorPallets.themeColor,
+                    );
+                  } else if (snapshot.data?.pendingFiles.length == 0) {
+                    return Container(
+                      height: _ui.screenHeight / 1.9,
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.cloud_off,
+                            size: _ui.heightPercent(14),
+                            color: ColorPallets.themeColor,
+                          ),
+                          Text(
+                            'No Data..',
+                            style: Styles.getstyle(
+                              fontweight: FontWeight.w600,
+                              fontsize: _ui.widthPercent(5),
+                            ),
+                          )
+                        ],
+                      ),
                     );
                   } else {
                     return Expanded(
@@ -203,25 +227,26 @@ class PendingFile extends GetView<PendingFilesController> {
                     );
                   }
                 }),
-            // Pagination controls
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.chevron_left),
-                  onPressed: () {
-                    // Implement previous page logic
-                  },
-                ),
-                Text('1 2 ... 99'),
-                IconButton(
-                  icon: Icon(Icons.chevron_right),
-                  onPressed: () {
-                    // Implement next page logic
-                  },
-                ),
-              ],
-            ),
+            if (controller.pendingFilesList.length != 0)
+              // Pagination controls
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.chevron_left),
+                    onPressed: () {
+                      // Implement previous page logic
+                    },
+                  ),
+                  Text('1 2 ... 99'),
+                  IconButton(
+                    icon: Icon(Icons.chevron_right),
+                    onPressed: () {
+                      // Implement next page logic
+                    },
+                  ),
+                ],
+              ),
           ],
         ),
       ),

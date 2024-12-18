@@ -176,7 +176,6 @@ class FinalCustomer extends GetView<FollowUp> {
               child: ListView.builder(
                 itemCount: items.length,
                 itemBuilder: (context, index) {
-                  final item = items[index];
                   return Padding(
                     padding: EdgeInsets.only(bottom: _ui.heightPercent(0.4)),
                     child: Card(),

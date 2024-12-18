@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shiva_poly_pack/data/controller/follow_up.dart';
+import 'package:shiva_poly_pack/data/model/tag_list.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/follow_up_dialoge.dart';
 import 'package:shiva_poly_pack/material/indicator.dart';
@@ -13,47 +15,16 @@ import 'package:shiva_poly_pack/screens/Staff/tracking/pages/material/follow_up_
 import '../../../../data/model/follow_up.dart';
 
 class FollowUpScreen extends GetView<FollowUp> {
-  final List<FollowUpItem> items = [
-    FollowUpItem(
-      location: 'Malerkotla',
-      name: 'Daniel Food Products',
-      phoneNumber: '9877566693',
-      date: '12-02-2024',
-    ),
-    FollowUpItem(
-      location: 'Ahmedgarh, Mandi',
-      name: 'Advisory',
-      phoneNumber: '8532009697',
-      date: '11-26-2024',
-    ),
-    FollowUpItem(
-      location: 'Goa',
-      name: 'Shiva Food Service',
-      phoneNumber: '9458784339',
-      date: '30-11-2024',
-    ),
-    FollowUpItem(
-      location: 'Banglore',
-      name: 'Laxmi Crockry Service',
-      phoneNumber: '9058377960',
-      date: '31-03-2024',
-    ),
-  ];
   @override
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
+    controller.getTagListData();
+
     return Scaffold(
       backgroundColor: ColorPallets.white,
+      resizeToAvoidBottomInset: false,
       extendBody: false,
       extendBodyBehindAppBar: false,
-      floatingActionButton: FloatingActionButton.small(
-        onPressed: () => FollowupDialog.showFollowUpDialog(context),
-        backgroundColor: ColorPallets.themeColor,
-        child: Icon(
-          Iconsax.add,
-          color: ColorPallets.white,
-        ),
-      ),
       appBar: AppBar(
         backgroundColor: ColorPallets.white,
         bottom: PreferredSize(
@@ -128,7 +99,7 @@ class FollowUpScreen extends GetView<FollowUp> {
                         InkWell(
                           borderRadius: BorderRadius.circular(14),
                           radius: _ui.widthPercent(1),
-                          onTap: () => controller.selectOption(context),
+                          onTap: () =>controller.selectOption(context),
                           child: Card(
                             shape: RoundedRectangleBorder(
                               side: BorderSide(
@@ -189,7 +160,7 @@ class FollowUpScreen extends GetView<FollowUp> {
                     return ProgressIndicatorWidget(
                       color: ColorPallets.themeColor,
                     );
-                  } else if (data?.followUp == null) {
+                  } else if (data?.followUp.length == 0) {
                     return Container(
                       height: _ui.screenHeight / 1.9,
                       alignment: Alignment.center,
@@ -222,7 +193,22 @@ class FollowUpScreen extends GetView<FollowUp> {
                             padding: EdgeInsets.only(
                               bottom: _ui.heightPercent(0.4),
                             ),
-                            child: FollowUpCard(item: item),
+                            child: FollowUpCard(
+                              item: item,
+                              eyeonTap: () async {
+                                controller.getFollowUpData(item.id.toString());
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => FollowUpListDialog(
+                                    followUpData: [],
+                                    name: item.name,
+                                  ),
+                                );
+                              },
+                              onTap: () {
+                                FollowupDialog.showFollowUpDialog(context);
+                              },
+                            ),
                           );
                         },
                       ),
@@ -247,6 +233,117 @@ class FollowUpScreen extends GetView<FollowUp> {
                   ),
                 ],
               ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildFollowUpForm({
+    required TextEditingController dateController,
+    required TextEditingController reviewController,
+    required VoidCallback onSave,
+    required VoidCallback onClose,
+    required Widget tagWidget,
+    required BuildContext context,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title
+            Center(
+              child: Text(
+                "Add Next Followup",
+                style:
+                    Styles.getstyle(fontweight: FontWeight.bold, fontsize: 22),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Follow-up Date Field
+            Text(
+              "Follow up Date",
+              style: Styles.getstyle(
+                fontweight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: dateController,
+              readOnly: true,
+              decoration: InputDecoration(
+                hintText: "mm/dd/yyyy",
+                hintStyle: Styles.getstyle(
+                    fontweight: FontWeight.w500,
+                    fontcolor: ColorPallets.fadegrey),
+                suffixIcon: Icon(Icons.calendar_today),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              onTap: () => controller.selectDate(context),
+            ),
+            const SizedBox(height: 16),
+
+            // Review Field
+            Text(
+              "Review",
+              style: Styles.getstyle(
+                fontweight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: reviewController,
+              maxLines: 3,
+              decoration: InputDecoration(
+                hintText: "Say it",
+                hintStyle: Styles.getstyle(
+                    fontweight: FontWeight.w500,
+                    fontcolor: ColorPallets.fadegrey),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Tag Widget
+            tagWidget,
+            const SizedBox(height: 16),
+
+            // Buttons Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: onClose,
+                  child: Text(
+                    "Close",
+                    style: Styles.getstyle(
+                        fontweight: FontWeight.w600,
+                        fontcolor: Colors.redAccent),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: onSave,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorPallets.themeColor,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
+                  ),
+                  child: Text(
+                    "Save",
+                    style: Styles.getstyle(
+                        fontweight: FontWeight.w600,
+                        fontcolor: ColorPallets.white),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),

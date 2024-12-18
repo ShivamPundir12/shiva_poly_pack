@@ -18,6 +18,7 @@ class AccountSelection extends GetView<AccountTypeController> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.brown),
           onPressed: () {
+            controller.onClose();
             Get.back();
           },
         ),

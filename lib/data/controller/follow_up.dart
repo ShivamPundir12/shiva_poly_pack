@@ -11,6 +11,7 @@ class FollowUp extends GetxController {
   final RxInt selectedTagId = 0.obs;
   final RxInt selectedcrmID = 0.obs;
   var followUpList = <FollowupModel>[].obs;
+  var postfollowUpList = <PostedFollowUp>[].obs;
   var tagList = <Tag>[].obs;
 
   final TextEditingController followUpDateController = TextEditingController();
@@ -41,9 +42,7 @@ class FollowUp extends GetxController {
       tags: selectedTagId.value.toString(),
     );
     await _apiService.createFollowUp(request);
-
-    // Perform further operations, such as API calls or state updates here
-    Get.back(); // Close the dialog
+    clearController();
   }
 
   // Method to display bottom sheet
@@ -64,6 +63,22 @@ class FollowUp extends GetxController {
     return followUp;
   }
 
+  Future<void> getFollowUpData(String id) async {
+    final followUp = await _apiService.fetchPostedFollowUp(getToken(), id);
+    // Ensure the response is a List
+    if (followUp.isNotEmpty) {
+      postfollowUpList.value = followUp.map((e) {
+        return PostedFollowUp(
+          customerName: e['customerName'] ?? '',
+          followupDate: DateTime.parse(e['followupDate']),
+          review: e['review'] ?? '',
+          tags: PostedFollowUp.parseTags(e['tags']),
+        );
+      }).toList();
+    }
+    update();
+  }
+
   Future<TagListResponse> getTagListData() async {
     final tags = await _apiService.fetchTag(getToken());
     tagList.value = tags.data;
@@ -76,7 +91,29 @@ class FollowUp extends GetxController {
     print("Selected Tag ID: $tagId");
   }
 
+  // Date Picker Logic
+  Future<void> selectDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate != null) {
+      followUpDateController.text =
+          "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+    }
+  }
+
   Future<void> postFollowUp(CreateFollowupModel request) async {}
+
+  void clearController() {
+    followUpDateController.clear();
+    reviewController.clear();
+    selectedTag.value = '';
+    selectedTagId.value = 0;
+    Get.back();
+  }
 
   // Cleanup controllers when the controller is disposed
   @override

@@ -9,8 +9,10 @@ import '../../../../../material/responsive.dart';
 import '../../../../../material/styles.dart';
 
 class FollowUpCard extends StatelessWidget {
-  FollowUpCard({super.key, required this.item});
+  FollowUpCard({super.key, required this.item, this.onTap, this.eyeonTap});
   final FollowupModel item;
+  final Function()? onTap;
+  final Function()? eyeonTap;
 
   @override
   Widget build(BuildContext context) {
@@ -69,9 +71,12 @@ class FollowUpCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Icon(
-                      CupertinoIcons.eye,
-                      color: ColorPallets.white,
+                    InkWell(
+                      onTap: eyeonTap,
+                      child: Icon(
+                        CupertinoIcons.eye,
+                        color: ColorPallets.white,
+                      ),
                     ),
                   ],
                 ),
@@ -118,11 +123,14 @@ class FollowUpCard extends StatelessWidget {
                       SizedBox(
                         height: _ui.heightPercent(1),
                       ),
-                      SvgPicture.asset(
-                        'assets/icons/send.svg',
-                        height: _ui.heightPercent(2.5),
-                        width: _ui.widthPercent(2),
-                        alignment: Alignment.center,
+                      InkWell(
+                        onTap: onTap,
+                        child: SvgPicture.asset(
+                          'assets/icons/send.svg',
+                          height: _ui.heightPercent(2.5),
+                          width: _ui.widthPercent(2),
+                          alignment: Alignment.center,
+                        ),
                       ),
                     ],
                   ),
