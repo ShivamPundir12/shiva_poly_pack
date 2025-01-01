@@ -1,33 +1,52 @@
+import 'package:camera/camera.dart';
+
+class PhotoMetadataResponse {
+  final String message;
+  final PhotoMetadata data;
+
+  PhotoMetadataResponse({required this.message, required this.data});
+
+  factory PhotoMetadataResponse.fromJson(Map<String, dynamic> json) =>
+      PhotoMetadataResponse(
+          message: json['message'], data: PhotoMetadata.fromJson(json['data']));
+}
+
 class PhotoMetadata {
-  String imagePath;
-  String date;
-  String time;
-  String latitude;
-  String longitude;
+  XFile? imagePath;
+  String useerId;
+  double latitude;
+  double longitude;
+  String locationName;
+  DateTime? createdDate;
+  String? photoUrl;
 
   PhotoMetadata({
-    required this.imagePath,
-    required this.date,
-    required this.time,
+    this.imagePath,
+    required this.useerId,
     required this.latitude,
     required this.longitude,
+    required this.locationName,
+    this.photoUrl,
+    this.createdDate,
   });
 
   // Convert to JSON
   Map<String, dynamic> toJson() => {
-        'imagePath': imagePath,
-        'date': date,
-        'time': time,
-        'latitude': latitude,
-        'longitude': longitude,
+        'Picture': imagePath,
+        'userId': useerId,
+        'Latitude': latitude,
+        'Longitude': longitude,
+        'locationName': locationName
       };
 
   // Create object from JSON
   factory PhotoMetadata.fromJson(Map<String, dynamic> json) => PhotoMetadata(
-        imagePath: json['imagePath'],
-        date: json['date'],
-        time: json['time'],
-        latitude: json['latitude'],
-        longitude: json['longitude'],
+        useerId: json['userId'],
+        latitude: json['Latitude'] ?? 0,
+        longitude: json['Longitude'] ?? 0,
+        locationName: json['locationName'] ?? '',
+        photoUrl: json['pictureUrl'] ?? '',
+        createdDate: DateTime.parse(
+            json['createdDate'] ?? DateTime.now().toIso8601String()),
       );
 }

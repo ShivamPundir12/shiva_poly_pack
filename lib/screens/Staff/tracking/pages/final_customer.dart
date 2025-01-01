@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:shiva_poly_pack/data/controller/final_customer.dart';
 import 'package:shiva_poly_pack/data/controller/follow_up.dart';
+import 'package:shiva_poly_pack/data/model/final_customer.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
+import 'package:shiva_poly_pack/screens/Staff/tracking/pages/material/final_cus_card.dart';
 import 'package:shiva_poly_pack/screens/Staff/tracking/pages/material/follow_up_card.dart';
 
 import '../../../../data/model/follow_up.dart';
+import '../../../../material/follow_up_dialoge.dart';
+import '../../../../material/indicator.dart';
 
-class FinalCustomer extends GetView<FollowUp> {
+class FinalCustomer extends GetView<FinalCustomerController> {
   final List<FollowUpItem> items = [
     FollowUpItem(
       location: 'Malerkotla',
@@ -42,23 +47,23 @@ class FinalCustomer extends GetView<FollowUp> {
     ResponsiveUI _ui = ResponsiveUI(context);
     return Scaffold(
       backgroundColor: ColorPallets.white,
+      resizeToAvoidBottomInset: false,
       extendBody: false,
       extendBodyBehindAppBar: false,
       appBar: AppBar(
         backgroundColor: ColorPallets.white,
         bottom: PreferredSize(
-          preferredSize: Size(_ui.widthPercent(70), _ui.heightPercent(2)),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: _ui.widthPercent(5)),
-            child: Divider(
-              color: Colors.grey.shade400,
-              thickness: 2.3,
-            ),
-          ),
-        ),
+            preferredSize: Size(_ui.widthPercent(70), _ui.heightPercent(2)),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: _ui.widthPercent(5)),
+              child: Divider(
+                color: Colors.grey.shade400,
+                thickness: 2.3,
+              ),
+            )),
         centerTitle: true,
         title: Text(
-          'Follow Ups',
+          'Final Customer',
           style: Styles.getstyle(
               fontweight: FontWeight.bold, fontsize: _ui.widthPercent(6)),
         ),
@@ -172,33 +177,189 @@ class FinalCustomer extends GetView<FollowUp> {
               ],
             ),
             SizedBox(height: 16.0),
-            Expanded(
-              child: ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: _ui.heightPercent(0.4)),
-                    child: Card(),
-                  );
-                },
+            FutureBuilder<FinalCustomerModel>(
+                future: controller.getFollowUpData(),
+                builder: (context, snapshot) {
+                  final data = snapshot.data;
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return ProgressIndicatorWidget(
+                      color: ColorPallets.themeColor,
+                    );
+                  } else if (data?.data.length == 0 ||
+                      data?.data.length == null) {
+                    return Container(
+                      height: _ui.screenHeight / 1.9,
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.cloud_off,
+                            size: _ui.heightPercent(14),
+                            color: ColorPallets.themeColor,
+                          ),
+                          Text(
+                            'No Data..',
+                            style: Styles.getstyle(
+                              fontweight: FontWeight.w600,
+                              fontsize: _ui.widthPercent(5),
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Obx(
+                      () => Expanded(
+                        child: ListView.builder(
+                          itemCount: controller.customerList.length,
+                          itemBuilder: (context, index) {
+                            final item = controller.customerList[index];
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                bottom: _ui.heightPercent(0.4),
+                              ),
+                              child: FinalCustomerCard(
+                                item: item,
+                                onTap: () {
+                                  FollowupDialog.showFollowUpDialog(
+                                      context, item.id.toString());
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  }
+                }),
+            if (controller.customerList.isNotEmpty)
+              // Pagination controls
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.chevron_left),
+                    onPressed: () {},
+                  ),
+                  Text('1 2 ... 99'),
+                  IconButton(
+                    icon: Icon(Icons.chevron_right),
+                    onPressed: () {
+                      // Implement next page logic
+                    },
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildFollowUpForm({
+    required TextEditingController dateController,
+    required TextEditingController reviewController,
+    required VoidCallback onSave,
+    required VoidCallback onClose,
+    required Widget tagWidget,
+    required BuildContext context,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title
+            Center(
+              child: Text(
+                "Add Next Followup",
+                style:
+                    Styles.getstyle(fontweight: FontWeight.bold, fontsize: 22),
               ),
             ),
-            // Pagination controls
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.chevron_left),
-                  onPressed: () {
-                    // Implement previous page logic
-                  },
+            const SizedBox(height: 16),
+            // Follow-up Date Field
+            Text(
+              "Follow up Date",
+              style: Styles.getstyle(
+                fontweight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: dateController,
+              readOnly: true,
+              decoration: InputDecoration(
+                hintText: "mm/dd/yyyy",
+                hintStyle: Styles.getstyle(
+                    fontweight: FontWeight.w500,
+                    fontcolor: ColorPallets.fadegrey),
+                suffixIcon: Icon(Icons.calendar_today),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                Text('1 2 ... 99'),
-                IconButton(
-                  icon: Icon(Icons.chevron_right),
-                  onPressed: () {
-                    // Implement next page logic
-                  },
+              ),
+              onTap: () => controller.selectDate(context),
+            ),
+            const SizedBox(height: 16),
+
+            // Review Field
+            Text(
+              "Review",
+              style: Styles.getstyle(
+                fontweight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: reviewController,
+              maxLines: 3,
+              decoration: InputDecoration(
+                hintText: "Say it",
+                hintStyle: Styles.getstyle(
+                    fontweight: FontWeight.w500,
+                    fontcolor: ColorPallets.fadegrey),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Tag Widget
+            tagWidget,
+            const SizedBox(height: 16),
+
+            // Buttons Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: onClose,
+                  child: Text(
+                    "Close",
+                    style: Styles.getstyle(
+                        fontweight: FontWeight.w600,
+                        fontcolor: Colors.redAccent),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: onSave,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorPallets.themeColor,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
+                  ),
+                  child: Text(
+                    "Save",
+                    style: Styles.getstyle(
+                        fontweight: FontWeight.w600,
+                        fontcolor: ColorPallets.white),
+                  ),
                 ),
               ],
             ),

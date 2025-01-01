@@ -129,8 +129,9 @@ class CheckMpin extends GetView<MPinController> {
 
   Widget buildPinPut() {
     return Pinput(
+      pinContentAlignment: Alignment.center,
       controller: controller.m_pin,
-      validator: ValidationService.normalvalidation,
+      validator: (c) => ValidationService.normalvalidation(c, 'm-Pin'),
       defaultPinTheme: defaultPinTheme,
       length: 4,
       enabled: true,

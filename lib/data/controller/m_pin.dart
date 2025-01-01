@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shiva_poly_pack/data/controller/local_storage.dart';
+import 'package:shiva_poly_pack/data/controller/sing_in.dart';
+import 'package:shiva_poly_pack/data/model/login.dart';
+import 'package:shiva_poly_pack/data/services/api_service.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/indicator.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
@@ -9,6 +13,8 @@ import 'package:shiva_poly_pack/routes/app_routes.dart';
 class MPinController extends GetxController {
   final m_pin = TextEditingController();
   final mpinFormKey = GlobalKey<FormState>().obs;
+  final SingInController singInController = Get.find<SingInController>();
+  // ApiService _apiService = ApiService();
 
   Future<void> get_Pin() async {
     if (mpinFormKey.value.currentState!.validate()) {
@@ -23,9 +29,13 @@ class MPinController extends GetxController {
 
   Future<void> confirmPin() async {
     if (mpinFormKey.value.currentState!.validate()) {
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+      final phoneNo = _prefs.getString('mobile_no') ?? '';
+      print(phoneNo);
+      final request = await LoginRequest(phonenumber: phoneNo, isStaff: true);
       LoadingView.show();
       Future.delayed(Durations.medium3).then((v) async {
-        LocalStorageManager.printAllStoredData();
         final pin = await LocalStorageManager.readData('m_pin');
         if (m_pin.text == pin) {
           LoadingView.hide();
@@ -48,6 +58,31 @@ class MPinController extends GetxController {
           );
         }
       });
+      // await _apiService.login(request).then((v) {
+      //   if (v?.token != null) {
+
+      //   } else {
+      //     LoadingView.hide();
+      //     Get.dialog(AlertDialog(
+      //       title: Text('Error'),
+      //       content: Text('Session Expired Please login again!'),
+      //       actions: [
+      //         ElevatedButton(
+      //           style: ElevatedButton.styleFrom(
+      //             backgroundColor: ColorPallets.themeColor,
+      //           ),
+      //           onPressed: () {
+      //             Get.offNamedUntil(Routes.sigin, (r) => false);
+      //           },
+      //           child: Text(
+      //             'Login',
+      //             style: Styles.getstyle(fontcolor: ColorPallets.white),
+      //           ),
+      //         ),
+      //       ],
+      //     ));
+      //   }
+      // });
     } else {
       Get.snackbar(
         'Error',

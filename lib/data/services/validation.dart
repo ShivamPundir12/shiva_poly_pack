@@ -11,9 +11,9 @@ class ValidationService {
     return null;
   }
 
-  static String? normalvalidation(String? value) {
+  static String? normalvalidation(String? value, String lable) {
     if (value == null || value.isEmpty) {
-      return 'Please enter the something!';
+      return 'Please enter $lable!';
     }
     return null;
   }

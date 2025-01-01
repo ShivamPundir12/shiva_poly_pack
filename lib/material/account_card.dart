@@ -22,7 +22,8 @@ class AccountCard extends StatelessWidget {
     ResponsiveUI _ui = ResponsiveUI(context);
     return Container(
       margin: EdgeInsets.symmetric(horizontal: _ui.widthPercent(2)),
-      padding: EdgeInsets.symmetric(vertical: _ui.heightPercent(3)),
+      padding: EdgeInsets.symmetric(
+          vertical: _ui.heightPercent(3), horizontal: _ui.widthPercent(2)),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
@@ -53,7 +54,7 @@ class AccountCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.6,
+                width: _ui.widthPercent(55),
                 child: Text(
                   description,
                   style: Styles.getstyle(

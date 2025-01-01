@@ -230,16 +230,17 @@ class SignIn extends GetView<SingInController> {
                 Stack(
                   fit: StackFit.passthrough,
                   children: [
-                    IconButton(
-                      padding: EdgeInsets.only(top: _ui.heightPercent(5)),
-                      onPressed: () {
-                        Get.back();
-                      },
-                      icon: Icon(
-                        Icons.arrow_back,
-                        color: ColorPallets.white,
+                    if (Navigator.canPop(context))
+                      IconButton(
+                        padding: EdgeInsets.only(top: _ui.heightPercent(5)),
+                        onPressed: () {
+                          Get.back();
+                        },
+                        icon: Icon(
+                          Icons.arrow_back,
+                          color: ColorPallets.white,
+                        ),
                       ),
-                    ),
                     Container(
                       alignment: Alignment(1, -1),
                       width: _ui.screenWidth,

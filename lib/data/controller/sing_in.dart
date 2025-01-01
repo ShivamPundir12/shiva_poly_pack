@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shiva_poly_pack/data/controller/account_type.dart';
 import 'package:shiva_poly_pack/data/controller/local_storage.dart';
+import 'package:shiva_poly_pack/data/controller/m_pin.dart';
 import 'package:shiva_poly_pack/data/model/login.dart';
 import 'package:shiva_poly_pack/data/services/api_service.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
@@ -18,11 +20,22 @@ class SingInController extends GetxController {
   RxBool isStaff = false.obs;
   RxBool isTapped = false.obs;
   ApiService _apiService = ApiService();
+  late final MPinController _mPinController;
+
+  @override
+  void onInit() {
+    super.onInit();
+    WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((v) {
+      _mPinController = Get.put(MPinController());
+    });
+  }
 
   Future<void> goToOtp() async {
     if (formKey.value.currentState!.validate()) {
       if (contactController.value.text.isNotEmpty) {
-        sendRequest();
+        SharedPreferences _prefs = await SharedPreferences.getInstance();
+        _prefs.setString('mobile_no', contactController.text);
+        await sendRequest(contactController.text);
         // Get.offNamed(Routes.otp, preventDuplicates: true);
       }
     }
@@ -33,10 +46,10 @@ class SingInController extends GetxController {
     update();
   }
 
-  Future<void> sendRequest() async {
+  Future<void> sendRequest(String contact) async {
     LoadingView.show();
     final request = await LoginRequest(
-      phonenumber: contactController.text,
+      phonenumber: contact,
       isStaff: true,
     );
     await _apiService.login(request).then((v) async {
@@ -44,6 +57,7 @@ class SingInController extends GetxController {
         await LocalStorageManager.saveData('token', v?.token.toString());
         await LocalStorageManager.saveData('userId', v?.user.id.toString());
         Get.offNamedUntil(Routes.otp, (route) => false);
+        contactController.clear();
         LoadingView.hide();
       } else {
         LoadingView.hide();
@@ -60,6 +74,7 @@ class SingInController extends GetxController {
     if (otpFormKey.value.currentState!.validate()) {
       if (otpController.value.text == '1234') {
         // await sendRequest();
+        clearController();
         Get.offNamed(Routes.m_pin, preventDuplicates: true);
       } else {
         Get.snackbar(
@@ -108,6 +123,14 @@ class SingInController extends GetxController {
           ),
         ),
       );
+    }
+  }
+
+  void clearController() {
+    contactController.clear();
+    otpController.clear();
+    if (_mPinController.m_pin.text.isNotEmpty) {
+      _mPinController.m_pin.clear();
     }
   }
 

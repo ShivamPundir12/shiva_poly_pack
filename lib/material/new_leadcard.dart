@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shiva_poly_pack/material/responsive.dart';
 
 class PouchCard extends StatelessWidget {
   final String name;
@@ -22,6 +23,7 @@ class PouchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ResponsiveUI _ui = ResponsiveUI(context);
     return Card(
       elevation: 3,
       margin: const EdgeInsets.all(8.0),
@@ -53,9 +55,13 @@ class PouchCard extends StatelessWidget {
             ),
             const Divider(),
             // Main Information
-            Text(
-              name,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Container(
+              width: _ui.widthPercent(42),
+              child: Text(
+                name,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
             ),
             const SizedBox(height: 4),
             Text(

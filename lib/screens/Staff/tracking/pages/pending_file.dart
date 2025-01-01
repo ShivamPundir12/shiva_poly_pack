@@ -13,37 +13,11 @@ import '../../../../material/color_pallets.dart';
 
 class PendingFile extends GetView<PendingFilesController> {
   PendingFile({super.key});
-  final List<FollowUpItem> items = [
-    FollowUpItem(
-      location: 'Malerkotla',
-      name: 'Daniel Food Products',
-      phoneNumber: '9877566693',
-      date: '12-02-2024',
-    ),
-    FollowUpItem(
-      location: 'Adisoy',
-      name: 'Ahmedgarh, Mandi',
-      phoneNumber: '8532009697',
-      date: '11-26-2024',
-    ),
-    FollowUpItem(
-      location: 'Goa',
-      name: 'Shiva Food Service',
-      phoneNumber: '9458784339',
-      date: '30-11-2024',
-    ),
-    FollowUpItem(
-      location: 'Banglore',
-      name: 'Laxmi Crockry Service',
-      phoneNumber: '9058377960',
-      date: '31-03-2024',
-    ),
-    // ... other items
-  ];
 
   @override
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
+    controller.getApiData();
     return Scaffold(
       backgroundColor: ColorPallets.white,
       appBar: AppBar(
@@ -178,75 +152,81 @@ class PendingFile extends GetView<PendingFilesController> {
               ],
             ),
             SizedBox(height: 16.0),
-            FutureBuilder<PendingFilesResponse>(
-                future: controller.getApiData(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return ProgressIndicatorWidget(
-                      color: ColorPallets.themeColor,
-                    );
-                  } else if (snapshot.data?.pendingFiles.length == 0) {
-                    return Container(
-                      height: _ui.screenHeight / 1.9,
-                      alignment: Alignment.center,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.cloud_off,
-                            size: _ui.heightPercent(14),
-                            color: ColorPallets.themeColor,
-                          ),
-                          Text(
-                            'No Data..',
-                            style: Styles.getstyle(
-                              fontweight: FontWeight.w600,
-                              fontsize: _ui.widthPercent(5),
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  } else {
-                    return Expanded(
-                      child: Obx(
-                        () => ListView.builder(
-                          itemCount: controller.pendingFilesList.length,
-                          itemBuilder: (context, index) {
-                            final item = controller.pendingFilesList[index];
-                            controller.formatDate(item.createdDate.toString());
-                            return Padding(
-                              padding: EdgeInsets.only(
-                                  bottom: _ui.heightPercent(0.4)),
-                              child: PendingFilesCard(item: item),
-                            );
-                          },
+            Obx(
+              () {
+                if (controller.isloading.value) {
+                  return ProgressIndicatorWidget(
+                    color: ColorPallets.themeColor,
+                  );
+                } else if (controller.pendingFilesList.length == 0) {
+                  return Container(
+                    height: _ui.screenHeight / 1.9,
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.cloud_off,
+                          size: _ui.heightPercent(14),
+                          color: ColorPallets.themeColor,
                         ),
+                        Text(
+                          'No Data..',
+                          style: Styles.getstyle(
+                            fontweight: FontWeight.w600,
+                            fontsize: _ui.widthPercent(5),
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                } else {
+                  return Expanded(
+                    child: Obx(
+                      () => ListView.builder(
+                        itemCount: controller.pendingFilesList.length,
+                        itemBuilder: (context, index) {
+                          final item = controller.pendingFilesList[index];
+                          controller.formatDate(item.createdDate.toString());
+                          return Padding(
+                            padding:
+                                EdgeInsets.only(bottom: _ui.heightPercent(0.4)),
+                            child: PendingFilesCard(item: item),
+                          );
+                        },
                       ),
-                    );
-                  }
-                }),
-            if (controller.pendingFilesList.length != 0)
-              // Pagination controls
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.chevron_left),
-                    onPressed: () {
-                      // Implement previous page logic
-                    },
-                  ),
-                  Text('1 2 ... 99'),
-                  IconButton(
-                    icon: Icon(Icons.chevron_right),
-                    onPressed: () {
-                      // Implement next page logic
-                    },
-                  ),
-                ],
-              ),
+                    ),
+                  );
+                }
+              },
+            )
+            // FutureBuilder<PendingFilesResponse>(
+            //   future: controller.getApiData(),
+            //   builder: (context, snapshot) {
+
+            //   },
+            // ),
+            // if (controller.pendingFilesList.length != 0)
+            //   // Pagination controls
+            //   Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       IconButton(
+            //         icon: Icon(Icons.chevron_left),
+            //         onPressed: () {
+            //           // Implement previous page logic
+            //         },
+            //       ),
+            //       Text('1 2 ... 99'),
+            //       IconButton(
+            //         icon: Icon(Icons.chevron_right),
+            //         onPressed: () {
+            //           // Implement next page logic
+            //         },
+            //       ),
+            //     ],
+            //   ),
           ],
         ),
       ),

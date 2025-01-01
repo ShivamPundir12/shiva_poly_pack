@@ -60,6 +60,7 @@ class FollowupModel {
   final String? alternateNumber;
   final String location;
   final List<String>? tagsId;
+  final List<String>? tagsName;
   final String? businessTypeTagsId;
   final int? agentId;
   final int? userId;
@@ -75,6 +76,7 @@ class FollowupModel {
     this.alternateNumber,
     required this.location,
     this.tagsId,
+    this.tagsName,
     this.businessTypeTagsId,
     this.agentId,
     this.userId,
@@ -92,6 +94,15 @@ class FollowupModel {
       phoneNumber: json['phoneNumber'] as String,
       alternateNumber: json['alternateNumber'] as String?,
       location: json['location'] as String,
+      tagsName: json['tagsName'] != null
+          ? List<String>.from(
+              (json['tagsName'] as String)
+                  .replaceAll('[', '')
+                  .replaceAll(']', '')
+                  .replaceAll('"', '')
+                  .split(','),
+            )
+          : null,
       tagsId: json['tagsId'] != null
           ? List<String>.from(
               (json['tagsId'] as String)
@@ -152,7 +163,7 @@ class CreateFollowupModel {
       'crmId': crmId,
       'followupDate': followupDate.toIso8601String(),
       'review': review,
-      'tags': tags,
+      'tagsId': tags,
     };
   }
 }
@@ -162,12 +173,14 @@ class PostedFollowUp {
   final DateTime followupDate;
   final String review;
   final List<String> tags;
+  final List<dynamic> tagsName;
 
   PostedFollowUp({
     required this.customerName,
     required this.followupDate,
     required this.review,
     required this.tags,
+    required this.tagsName,
   });
 
   // Factory constructor to create a FollowUp object from JSON
@@ -177,6 +190,7 @@ class PostedFollowUp {
       followupDate: DateTime.parse(json['followupDate']),
       review: json['review'] as String,
       tags: parseTags(json['tags']),
+      tagsName: json['tagsName'] ?? [],
     );
   }
 
@@ -192,21 +206,27 @@ class PostedFollowUp {
 
   // Custom method to parse the tags field
   static List<String> parseTags(dynamic tagsField) {
+    List<String> setList = [];
+
     if (tagsField is String) {
       try {
         // If the string looks like a JSON array, decode it
         final dynamic decoded = jsonDecode(tagsField);
         if (decoded is List) {
           return decoded.map((e) => e.toString()).toList();
+        } else {
+          if (!setList.contains(tagsField)) {
+            setList.add(tagsField);
+          }
         }
       } catch (e) {
         // If it fails, assume it's a single tag and return it as a list
-        return [tagsField];
+        return setList.toList();
       }
     } else if (tagsField is List) {
       return tagsField.map((e) => e.toString()).toList();
     }
-    return [];
+    return setList;
   }
 }
 
@@ -235,10 +255,10 @@ class FollowUpData {
       id: json['id'],
       followUpDate: json['followUpDate'],
       review: json['review'],
-      tagsId: json['tagsId'],
+      tagsId: json['tagsId'] ?? '',
       crmId: json['crmId'],
       createdDate: json['createdDate'],
-      isFollowUpDone: json['isFollowUpDone'],
+      isFollowUpDone: json['isFollowUpDone'] ?? false,
     );
   }
 

@@ -1,12 +1,12 @@
+import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:shiva_poly_pack/data/controller/local_storage.dart';
 import 'package:shiva_poly_pack/data/controller/pending_files.dart';
 import 'package:shiva_poly_pack/data/model/new_customer.dart';
-import 'package:shiva_poly_pack/data/model/pending_files.dart';
 import 'package:shiva_poly_pack/data/model/tag_list.dart';
 import 'package:shiva_poly_pack/data/services/api_service.dart';
-
 import '../../routes/app_routes.dart';
 
 class AddCustomerController extends GetxController {
@@ -32,10 +32,14 @@ class AddCustomerController extends GetxController {
   var tagList = <Tag>[].obs;
   var businesstagList = <Tag>[].obs;
   var agenttagList = <Tag>[].obs;
-  final RxInt selectedTagId = 0.obs;
-  final RxInt selectedBTagId = 0.obs;
+  final RxList<String> selectedTagId = <String>[].obs;
+  final RxList<String> selectedBTagId = <String>[].obs;
   final RxInt selectedATagId = 0.obs;
+  final RxInt id = 0.obs;
+  final RxBool isSaved = false.obs;
   RxString date = ''.obs;
+  final PendingFilesController _pendingFilesController =
+      Get.find<PendingFilesController>();
   var customerData = CustomerData(
     id: 0,
     name: '',
@@ -56,6 +60,8 @@ class AddCustomerController extends GetxController {
 
   @override
   void onInit() {
+    isSaved.value = false;
+    update();
     getTagListData();
     getBussinessTagListData();
     super.onInit();
@@ -68,7 +74,7 @@ class AddCustomerController extends GetxController {
     // Extract day, month, and year
     String day = parsedDate.day.toString().padLeft(2, '0');
     String month = parsedDate.month.toString().padLeft(2, '0');
-    String year = parsedDate.year.toString().substring(2);
+    String year = parsedDate.year.toString();
 
     //Time formatting
     int hour = parsedDate.hour > 12 ? parsedDate.hour - 12 : parsedDate.hour;
@@ -78,7 +84,7 @@ class AddCustomerController extends GetxController {
     // String period = parsedDate.hour >= 12 ? "PM" : "AM";
     // String convertedtime =
     //     "${hour.toString().padLeft(2, '0')}:$minute:$second $period";
-    date.value = "$day/$month/$year";
+    date.value = "$year-$month-$day";
     update();
   }
 
@@ -92,37 +98,52 @@ class AddCustomerController extends GetxController {
     );
     if (pickedDate != null) {
       followUpDateController.text =
-          "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+          "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
     }
   }
 
   // Function to save form data
-  Future<void> saveCustomer() async {
+  Future<void> saveCustomer(int id) async {
+    isSaved.value = true;
+    update();
+
     // Form submission logic (replace with API calls or database saving logic)
     if (cusFormKey.value.currentState!.validate()) {
-      if (nameController.text.isEmpty || contactController.text.isEmpty) {
-        Get.snackbar("Error", "Please fill all required fields",
-            backgroundColor: Colors.red, colorText: Colors.white);
-        return;
+      if (followUpDateController.text.isEmpty) {
+        Get.snackbar('Error', 'Please select a follow-up date');
+      } else if (locationController.text.isEmpty) {
+        Get.snackbar('Error', 'Please enter a location');
+      } else if (selectbusinesstagList.isEmpty) {
+        Get.snackbar('Error', 'Please select a business tag');
+      } else if (selectagstagList.isEmpty) {
+        Get.snackbar('Error', 'Please select a tag');
+      } else if (nameController.text.isEmpty) {
+        Get.snackbar('Error', 'Please enter a name');
+      } else {
+        final request = CreateNewCustomer(
+            id: id,
+            name: nameController.text,
+            phoneNumber: contactController.text,
+            alternateNumber: altContactController.text,
+            folowUpDate: followUpDateController.text,
+            location: locationController.text,
+            tagsId: selectedTagId,
+            businessTypeTagsId: selectedBTagId,
+            agentId: selectedATagId.value,
+            userId: LocalStorageManager.getUserId(),
+            additionalNote: remarksController.text);
+        final data = jsonEncode(request.toApiFormat());
+        print("DATA :$data");
+
+        await _apiService.createNewCustomer(request, getToken());
+
+        // Display success message
+        Get.snackbar("Success", "Customer Added Successfully",
+            backgroundColor: Colors.green, colorText: Colors.white);
+        clearController();
+        isSaved.value = false;
+        update();
       }
-
-      final request = CreateNewCustomer(
-          name: nameController.text,
-          phoneNumber: contactController.text,
-          alternateNumber: altContactController.text,
-          location: locationController.text,
-          tagsId: selectedTagId.value.toString(),
-          businessTypeTagsId: selectedBTagId.value.toString(),
-          agentId: 0,
-          userId: LocalStorageManager.getUserId(),
-          additionalNote: remarksController.text);
-
-      await _apiService.createNewCustomer(request, getToken());
-
-      // Display success message
-      Get.snackbar("Success", "Customer Added Successfully",
-          backgroundColor: Colors.green, colorText: Colors.white);
-      clearController();
     }
 
     // Debugging form values
@@ -149,6 +170,13 @@ class AddCustomerController extends GetxController {
     return tags;
   }
 
+  Future<TagListResponse> getagentTagListData() async {
+    final tags = await _apiService.fetchAgentTag(getToken());
+    agenttagList.value = tags.data;
+    update();
+    return tags;
+  }
+
   int getColor(String color) {
     if (color.contains('#')) {
       return int.parse(color.replaceFirst('#', '0xFF'));
@@ -157,41 +185,40 @@ class AddCustomerController extends GetxController {
     }
   }
 
-  void onTagSelected(int tagId, bool isBussiness) {
-    if (!isBussiness) {
-      selectedTagId.value = tagId;
+  void onTagSelected(int tagId, String label) {
+    if (label == 'Tags' && !selectedTagId.contains(tagId)) {
+      selectedTagId.add(tagId.toString());
+    } else if (label == 'Business Type' && !selectedBTagId.contains(tagId)) {
+      selectedBTagId.add(tagId.toString());
     } else {
-      selectedBTagId.value = tagId;
+      selectedATagId.value = tagId;
     }
     update();
     print("Selected Tag ID: $tagId");
   }
 
-  void onTagNameSelected(Tag tag, bool isBussiness) {
-    if (isBussiness) {
-      bool hastag = selectbusinesstagList.any((e) => e.id == tag.id);
-      if (!hastag) {
-        selectbusinesstagList.add(tag);
-        update();
-      }
+  void onTagNameSelected(Tag tag, bool? isBussiness) {
+    if (isBussiness == true) {
+      selectbusinesstagList.add(tag);
+      update();
+    } else if (isBussiness == false) {
+      selectagstagList.add(tag);
     } else {
-      if (!selectagstagList.contains(tag)) {
-        selectagstagList.add(tag);
-      }
-      // tagsController.value.text = tag;
-      // print(tagsController.value.text);
-      // agentController.value.text = tag;
-      // update();
+      selectagenTtagList.add(tag);
+      update();
     }
     print("Selected Tag name: $tag");
   }
 
-  Future<void> onEdit(String id) async {
+  Future<dynamic> onEdit(String id) async {
     final data = await _apiService.getCustomerInfo(getToken(), id);
     customerData.value = data.data;
     fillData();
     Future.delayed(Durations.medium4);
-    Get.toNamed(Routes.add_new_cus);
+    final result = await Get.toNamed(Routes.add_new_cus);
+    if (result != null) {
+      await _pendingFilesController.getApiData();
+    }
     update();
   }
 
@@ -202,9 +229,10 @@ class AddCustomerController extends GetxController {
       nameController.text = data.name;
       contactController.text = data.phoneNumber;
       altContactController.text = data.alternateNumber;
-      // businesstagList.value = data.businessTypeTagsId;
       followUpDateController.text = date.value;
       remarksController.text = data.additionalNote;
+      locationController.text = data.location;
+      id.value = data.id;
     }
   }
 
@@ -218,8 +246,18 @@ class AddCustomerController extends GetxController {
     agentController.value.clear();
     followUpDateController.clear();
     remarksController.clear();
+    locationController.clear();
     selectagstagList.clear();
     selectbusinesstagList.clear();
+    selectagenTtagList.clear();
+    id.value = 0;
+    if (selectedTagId.isNotEmpty) {
+      selectedTagId.clear();
+    }
+    if (selectedBTagId.isNotEmpty) {
+      selectedBTagId.clear();
+    }
+    selectedATagId.value = 0;
   }
 
   @override

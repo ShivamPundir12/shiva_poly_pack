@@ -13,11 +13,11 @@ class MyAppController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
+    await GetStorage.init();
     Future.delayed(Durations.medium2).then((c) {
       opacity.value = 1.0;
       update();
     });
-    await GetStorage.init();
     onboard.value = LocalStorageManager.readData('onboard-done') ?? 'no';
     m_pin.value = LocalStorageManager.readData('m_pin') ?? '';
     set_route();

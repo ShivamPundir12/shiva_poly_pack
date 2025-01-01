@@ -1,8 +1,12 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
+import 'package:shiva_poly_pack/screens/Customer/home/dasboard.dart';
+import 'package:shiva_poly_pack/screens/Customer/home/ledger.dart';
 import 'package:shiva_poly_pack/screens/Customer/onboardings/account_type.dart';
 import 'package:shiva_poly_pack/screens/Customer/onboardings/splash_screen.dart';
+import 'package:shiva_poly_pack/screens/Customer/profile/profile.dart';
 import 'package:shiva_poly_pack/screens/Staff/tracking/pages/final_customer.dart';
+import 'package:shiva_poly_pack/screens/Staff/tracking/qr_scanner.dart';
 import 'package:shiva_poly_pack/screens/auth/m_pin.dart';
 import 'package:shiva_poly_pack/screens/auth/m_pin_auth.dart';
 import 'package:shiva_poly_pack/screens/auth/otp.dart';
@@ -107,6 +111,26 @@ class AppRouter {
       page: () => CheckMpin(),
       transition: Transition.rightToLeft,
     ),
+    GetPage(
+      name: Routes.cus_dasboard,
+      page: () => DashboardScreen(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: Routes.cus_profile,
+      page: () => ProfileScreen(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: Routes.ledger_report,
+      page: () => LedgerReportScreen(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: Routes.qr_scanner,
+      page: () => QRScannerScreen(),
+      transition: Transition.rightToLeft,
+    ),
   ];
 }
 
@@ -127,5 +151,9 @@ class Routes {
   static String add_new_cus = '/tracking/pages/add_new_customer';
   static String crm_list = '/tracking/pages/crm_list';
   static String final_cus = '/tracking/pages/final_cus';
+  static String qr_scanner = '/tracking/qr_scanner';
   static String account_typ = '/tracking/pages/account_typ';
+  static String cus_dasboard = '/Customer/home/dasboard';
+  static String cus_profile = '/Customer/profile';
+  static String ledger_report = '/Customer/home/ledger';
 }

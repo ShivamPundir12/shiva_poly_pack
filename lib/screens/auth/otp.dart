@@ -229,7 +229,7 @@ class Otp extends GetView<SingInController> {
       focusedPinTheme: focusedPinTheme,
       submittedPinTheme: submittedPinTheme,
       length: 4,
-      validator: ValidationService.normalvalidation,
+      validator: (v) => ValidationService.normalvalidation(v, 'OTP'),
       controller: controller.otpController,
       enabled: true,
       keyboardType: TextInputType.phone,

@@ -77,8 +77,9 @@ class PendingFilesCard extends GetView<PendingFilesController> {
                       ],
                     ),
                     InkWell(
-                      onTap: () =>
-                          _customerController.onEdit(item.id.toString()),
+                      onTap: () async {
+                        await _customerController.onEdit(item.id.toString());
+                      },
                       child: Icon(
                         Icons.edit,
                         color: ColorPallets.white,
@@ -98,11 +99,14 @@ class PendingFilesCard extends GetView<PendingFilesController> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        item.name,
-                        style: Styles.getstyle(
-                          fontsize: _ui.widthPercent(5),
-                          fontweight: FontWeight.w700,
+                      Container(
+                        width: _ui.widthPercent(49),
+                        child: Text(
+                          item.name,
+                          style: Styles.getstyle(
+                            fontsize: _ui.widthPercent(4),
+                            fontweight: FontWeight.w700,
+                          ),
                         ),
                       ),
                       Text(

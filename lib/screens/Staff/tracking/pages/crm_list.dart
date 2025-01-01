@@ -1,122 +1,114 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shiva_poly_pack/material/responsive.dart';
+import 'package:shiva_poly_pack/screens/Staff/tracking/pages/material/list_card.dart';
 import '../../../../data/controller/crm_list.dart';
+import '../../../../material/color_pallets.dart';
+import '../../../../material/styles.dart';
 
 class CRMListScreen extends GetView<CRMListController> {
   CRMListScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    controller.getCRMList();
+    ResponsiveUI _ui = ResponsiveUI(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CRM List'),
+        backgroundColor: ColorPallets.white,
+        bottom: PreferredSize(
+            preferredSize: Size(_ui.widthPercent(70), _ui.heightPercent(2)),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: _ui.widthPercent(5)),
+              child: Divider(
+                color: Colors.grey.shade400,
+                thickness: 2.3,
+              ),
+            )),
         centerTitle: true,
-        backgroundColor: Colors.deepPurpleAccent,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Obx(
-          () => ListView.builder(
-            itemCount: controller.customerList.length,
-            itemBuilder: (context, index) {
-              final customer = controller.customerList[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 3,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header with Name and Phone Number
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            customer['name'].toString() ?? 'N/A',
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            customer['phoneNumber'].toString() ?? 'N/A',
-                            style: const TextStyle(
-                                fontSize: 16, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-
-                      // Location and Business Tag
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Location: ${customer['location'] ?? 'N/A'}',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          Text(
-                            'Business: ${customer['businessTag'] ?? 'N/A'}',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      // Tags using Chips
-                      Wrap(
-                        spacing: 8,
-                        children: List<Widget>.generate(
-                          (customer['tags'] as List<dynamic>?)?.length ?? 0,
-                          (tagIndex) => Chip(
-                            label: Text(
-                              customer['tags'].toString(),
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            backgroundColor: Colors.deepPurpleAccent,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-
-                      // Last Comment and Party Name
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Last Comment: ${customer['lastComment'] ?? 'N/A'}',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          Text(
-                            'Party: ${customer['partyName'] ?? 'N/A'}',
-                            style: const TextStyle(
-                                fontSize: 14, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-
-                      // Add Tagging Button
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: ElevatedButton(
-                          onPressed: () => controller.addTag(index, 'New Tag'),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepPurpleAccent),
-                          child: const Text(
-                            'Add Tagging',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+        title: Text(
+          'List',
+          style: Styles.getstyle(
+              fontweight: FontWeight.bold, fontsize: _ui.widthPercent(6)),
         ),
+        leading: IconButton(
+          padding: EdgeInsets.only(
+            left: _ui.widthPercent(5),
+          ),
+          icon: Icon(
+            Icons.arrow_back,
+            color: ColorPallets.themeColor,
+            size: _ui.widthPercent(7),
+          ),
+          onPressed: () {
+            Get.back(canPop: true);
+          },
+        ),
+      ),
+      body: Column(
+        children: [
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: TextField(
+          //     onChanged: (value) {
+          //       controller.filterCustomerList(value, controller.customerList,
+          //           controller.filteredCustomerList);
+          //     },
+          //     decoration: InputDecoration(
+          //       labelText: 'Search',
+          //       border: OutlineInputBorder(),
+          //       suffixIcon: Icon(Icons.search),
+          //     ),
+          //   ),
+          // ),
+          Expanded(
+            child: FutureBuilder<dynamic>(
+                future: controller.getCRMList(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    );
+                  } else {
+                    return Obx(
+                      () {
+                        if (controller.filteredCustomerList.isEmpty) {
+                          return Container(
+                            height: _ui.screenHeight / 1.9,
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.cloud_off,
+                                  size: _ui.heightPercent(14),
+                                  color: ColorPallets.themeColor,
+                                ),
+                                Text(
+                                  'No Data..',
+                                  style: Styles.getstyle(
+                                    fontweight: FontWeight.w600,
+                                    fontsize: _ui.widthPercent(5),
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
+                        } else {
+                          return ListView.builder(
+                            itemCount: controller.filteredCustomerList.length,
+                            itemBuilder: (context, index) {
+                              return CustomerCard(index: index);
+                            },
+                          );
+                        }
+                      },
+                    );
+                  }
+                }),
+          ),
+        ],
       ),
     );
   }

@@ -74,7 +74,7 @@ class ImagePreviewScreen extends GetView<UploadPictureController> {
                 label: const Text('Retake'),
               ),
               ElevatedButton.icon(
-                onPressed: controller.uploadImage,
+                onPressed: () => controller.uploadImage(),
                 icon: const Icon(Icons.cloud_upload),
                 label: const Text('Upload'),
               ),

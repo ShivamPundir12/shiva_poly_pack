@@ -198,7 +198,7 @@ class MPin extends GetView<MPinController> {
   Widget buildPinPut() {
     return Pinput(
       controller: controller.m_pin,
-      validator: ValidationService.normalvalidation,
+      validator: (v) => ValidationService.normalvalidation(v, 'm-Pin'),
       defaultPinTheme: defaultPinTheme,
       focusedPinTheme: focusedPinTheme,
       submittedPinTheme: submittedPinTheme,

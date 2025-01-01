@@ -1,55 +1,66 @@
 import 'dart:convert';
 
 class CreateNewCustomer {
-  final String name;
-  final String phoneNumber;
-  final String alternateNumber;
-  final String location;
-  final String tagsId;
-  final String businessTypeTagsId;
+  final String? name;
+  final String? phoneNumber;
+  final String? alternateNumber;
+  final String? location;
+  final List<String>? tagsId;
+  final List<String>? businessTypeTagsId;
   final int agentId;
-  final String userId;
-  final String additionalNote;
+  final int id;
+  // final List<String>? agentId;
+  final String? userId;
+  final String? folowUpDate;
+  final String? additionalNote;
 
   CreateNewCustomer({
-    required this.name,
-    required this.phoneNumber,
-    required this.alternateNumber,
-    required this.location,
-    required this.tagsId,
-    required this.businessTypeTagsId,
+    this.name,
+    this.phoneNumber,
+    this.alternateNumber,
+    this.location,
+    this.tagsId,
+    this.businessTypeTagsId,
     required this.agentId,
-    required this.userId,
-    required this.additionalNote,
+    this.userId,
+    required this.id,
+    this.additionalNote,
+    this.folowUpDate,
   });
 
-  // Factory method to create CreateNewCustomer from JSON
+  // Factory to create from JSON
   factory CreateNewCustomer.fromJson(Map<String, dynamic> json) {
     return CreateNewCustomer(
-      name: json['name'],
-      phoneNumber: json['phoneNumber'],
-      alternateNumber: json['alternateNumber'],
-      location: json['location'],
-      tagsId: json['tagsId'],
-      businessTypeTagsId: json['businessTypeTagsId'],
+      name: json['name'] as String?,
+      phoneNumber: json['phoneNumber'] as String?,
+      alternateNumber: json['alternateNumber'] as String?,
+      location: json['location'] as String?,
+      tagsId: json['tagsId'] != null ? List<String>.from(json['tagsId']) : null,
+      businessTypeTagsId: json['businessTypeTagsId'] != null
+          ? List<String>.from(json['businessTypeTagsId'])
+          : null,
       agentId: json['agentId'],
-      userId: json['userId'],
-      additionalNote: json['additionalNote'],
+      userId: json['userId'] as String?,
+      additionalNote: json['additionalNote'] as String?,
+      id: json['id'],
     );
   }
 
-  // Convert CreateNewCustomer to JSON
-  Map<String, dynamic> toJson() {
+  // Method to convert data to API format
+  Map<String, dynamic> toApiFormat() {
     return {
-      'name': name,
-      'phoneNumber': phoneNumber,
-      'alternateNumber': alternateNumber,
-      'location': location,
-      'tagsId': tagsId,
-      'businessTypeTagsId': businessTypeTagsId,
-      'agentId': agentId,
-      'userId': userId,
-      'additionalNote': additionalNote,
+      "name": name,
+      "phoneNumber": phoneNumber,
+      "alternateNumber": alternateNumber,
+      "location": location,
+      "followUpDate": folowUpDate,
+      "tagsId": tagsId != null ? tagsId?.join(',') : null,
+      "businessTypeTagsId":
+          businessTypeTagsId != null ? businessTypeTagsId?.join(',') : null,
+      "agentId": agentId,
+      "userId": userId,
+      "id": id,
+      "additionalNote": additionalNote,
     };
   }
 }
@@ -126,7 +137,7 @@ class CustomerData {
               json['businessTypeTagsId'].isNotEmpty
           ? List<String>.from(jsonDecode(json['businessTypeTagsId']))
           : [],
-      agentId: json['agentId'] != null ? json['agentId'] as int : 0,
+      agentId: json['agentId'] ?? 0,
       userId: json['userId'] as String,
       followUpDate: json['followUpDate'] ?? '',
       additionalNote: json['additionalNote'] ?? '',

@@ -20,6 +20,7 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
     ResponsiveUI _ui = ResponsiveUI(context);
     controller.getTagListData();
     controller.getBussinessTagListData();
+    controller.getagentTagListData();
 
     return Scaffold(
       backgroundColor: ColorPallets.white,
@@ -27,14 +28,15 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
       appBar: AppBar(
         backgroundColor: ColorPallets.white,
         bottom: PreferredSize(
-            preferredSize: Size(_ui.widthPercent(70), _ui.heightPercent(2)),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: _ui.widthPercent(5)),
-              child: Divider(
-                color: Colors.grey.shade400,
-                thickness: 2.3,
-              ),
-            )),
+          preferredSize: Size(_ui.widthPercent(70), _ui.heightPercent(2)),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: _ui.widthPercent(5)),
+            child: Divider(
+              color: Colors.grey.shade400,
+              thickness: 2.3,
+            ),
+          ),
+        ),
         centerTitle: true,
         title: Text(
           'Add New Customer',
@@ -51,16 +53,18 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
             size: _ui.widthPercent(7),
           ),
           onPressed: () {
+            controller.isSaved.value = false;
             controller.clearController();
-            Get.back(canPop: true);
+            Get.back(canPop: true, result: 'success');
           },
         ),
       ),
       body: SingleChildScrollView(
         padding: isKeyboardVisible
-            ? EdgeInsets.symmetric(
-                vertical: _ui.heightPercent(4),
-                horizontal: _ui.widthPercent(3),
+            ? EdgeInsets.only(
+                bottom: _ui.heightPercent(28),
+                left: _ui.widthPercent(3),
+                right: _ui.widthPercent(3),
               )
             : const EdgeInsets.all(16.0),
         child: Container(
@@ -72,19 +76,25 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
               children: [
                 buildTextField(
                     'Name', 'John Doe', controller.nameController, true),
-                buildRowFields(_ui.screenWidth),
+                buildRowFields(_ui.screenWidth, context),
+                buildTextField('Location', 'Enter the location',
+                    controller.locationController, true),
                 Obx(
                   () => buildTagSelectionField(
                     context: context,
                     ui: _ui,
+                    errorText: controller.isSaved.value
+                        ? controller.selectbusinesstagList.isEmpty
+                            ? 'Please select a Business tag'
+                            : null
+                        : null,
                     selectedlist: controller.selectbusinesstagList,
                     label: "Business Type",
                     isRequired: true,
                     isBusiness: true,
                     options: controller.businesstagList,
-                    selectedTagId: controller.selectedBTagId.value,
                     onTagSelected: (int id) {
-                      controller.onTagSelected(id, true);
+                      controller.onTagSelected(id, 'Business Type');
                     },
                   ),
                 ),
@@ -92,14 +102,18 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
                   () => buildTagSelectionField(
                     context: context,
                     ui: _ui,
+                    errorText: controller.isSaved.value
+                        ? controller.selectagstagList.isEmpty
+                            ? 'Please select a Tag'
+                            : null
+                        : null,
                     selectedlist: controller.selectagstagList,
                     label: "Tags",
                     isRequired: true,
                     isBusiness: true,
                     options: controller.tagList,
-                    selectedTagId: controller.selectedTagId.value,
                     onTagSelected: (int id) {
-                      controller.onTagSelected(id, true);
+                      controller.onTagSelected(id, 'Tags');
                     },
                   ),
                 ),
@@ -112,9 +126,8 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
                     isRequired: false,
                     isBusiness: true,
                     options: controller.agenttagList,
-                    selectedTagId: controller.selectedATagId.value,
                     onTagSelected: (int id) {
-                      controller.onTagSelected(id, true);
+                      controller.onTagSelected(id, 'Agent');
                     },
                   ),
                 ),
@@ -141,15 +154,23 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
           Row(
             children: [
               Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
-              if (isReqquired)
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    '*',
-                    style: Styles.getstyle(
-                        fontweight: FontWeight.bold, fontcolor: Colors.red),
-                  ),
-                )
+              isReqquired
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Text(
+                        '*',
+                        style: Styles.getstyle(
+                            fontweight: FontWeight.bold, fontcolor: Colors.red),
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Text(
+                        '',
+                        style: Styles.getstyle(
+                            fontweight: FontWeight.bold, fontcolor: Colors.red),
+                      ),
+                    )
             ],
           ),
           const SizedBox(height: 4),
@@ -160,12 +181,9 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
                 : TextInputType.name,
             maxLength:
                 label == 'Contact' || label == 'Alternative No.' ? 10 : null,
-            validator: (value) =>
-                label == 'Contact' || label == 'Alternative No.'
-                    ? ValidationService.validateMobileNumber(value)
-                    : isReqquired
-                        ? ValidationService.normalvalidation(value)
-                        : null,
+            validator: (value) => isReqquired
+                ? ValidationService.normalvalidation(value, label)
+                : null,
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: Styles.getstyle(
@@ -183,7 +201,8 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
   }
 
   // Row Fields for Contact and Alternative No.
-  Widget buildRowFields(double screenWidth) {
+  Widget buildRowFields(double screenWidth, BuildContext context) {
+    ResponsiveUI _ui = ResponsiveUI(context);
     return Row(
       children: [
         Expanded(
@@ -194,13 +213,10 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
             true,
           ),
         ),
-        const SizedBox(width: 10),
+        SizedBox(width: _ui.widthPercent(3)),
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 4.0),
-            child: buildTextField('Alternative No.', 'Enter alt no.',
-                controller.altContactController, false),
-          ),
+          child: buildTextField('Alternative No.', 'Enter alt no.',
+              controller.altContactController, false),
         ),
       ],
     );
@@ -209,9 +225,9 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
   // Dropdown Field Widget
   Widget buildTagSelectionField({
     required String label,
+    String? errorText,
     required bool isBusiness,
     required List<Tag> options,
-    required int selectedTagId,
     required ResponsiveUI ui,
     required bool isRequired,
     required RxList<Tag> selectedlist,
@@ -256,6 +272,7 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
             child: InputDecorator(
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
+                errorText: errorText,
                 focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.blue),
                 ),
@@ -379,7 +396,8 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
           TextFormField(
             controller: controller.followUpDateController,
             readOnly: true,
-            validator: ValidationService.normalvalidation,
+            validator: (c) =>
+                ValidationService.normalvalidation(c, 'Follow up Date'),
             decoration: InputDecoration(
               hintText: 'dd/mm/yyyy',
               hintStyle: Styles.getstyle(
@@ -410,7 +428,7 @@ class AddCustomerScreen extends GetView<AddCustomerController> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
-        onPressed: controller.saveCustomer,
+        onPressed: () => controller.saveCustomer(controller.id.value),
         icon: const Icon(Icons.save),
         label: const Text('Save'),
         style: ElevatedButton.styleFrom(

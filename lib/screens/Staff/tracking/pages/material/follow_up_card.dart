@@ -1,14 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:get/utils.dart';
 import 'package:shiva_poly_pack/data/controller/account_type.dart';
+import 'package:shiva_poly_pack/data/controller/follow_up.dart';
+import 'package:shiva_poly_pack/data/model/final_customer.dart';
 
 import '../../../../../data/model/follow_up.dart';
 import '../../../../../material/color_pallets.dart';
 import '../../../../../material/responsive.dart';
 import '../../../../../material/styles.dart';
 
-class FollowUpCard extends StatelessWidget {
+class FollowUpCard extends GetView<FollowUp> {
   FollowUpCard({super.key, required this.item, this.onTap, this.eyeonTap});
   final FollowupModel item;
   final Function()? onTap;
@@ -63,7 +67,7 @@ class FollowUpCard extends StatelessWidget {
                           width: _ui.widthPercent(3),
                         ),
                         Text(
-                          item.location.toString(),
+                          item.location.capitalize.toString(),
                           style: Styles.getstyle(
                             fontweight: FontWeight.w600,
                             fontcolor: ColorPallets.white,
@@ -92,19 +96,33 @@ class FollowUpCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        item.name,
-                        style: Styles.getstyle(
-                            fontsize: _ui.widthPercent(5),
-                            fontweight: FontWeight.w700),
+                      Container(
+                        width: _ui.widthPercent(42),
+                        child: Text(
+                          item.name.capitalize.toString(),
+                          style: Styles.getstyle(
+                              fontsize: _ui.widthPercent(5),
+                              fontweight: FontWeight.w700),
+                        ),
                       ),
-                      Text(
-                        "Tag: ${item.tagsId?.first}",
-                        style: Styles.getstyle(
-                            fontsize: 18,
-                            fontcolor: ColorPallets.fadegrey2,
-                            fontweight: FontWeight.w500),
-                      )
+                      if (item.tagsName != null)
+                        ...item.tagsName!.map((e) {
+                          return e.isEmpty
+                              ? Text(
+                                  "NO TAGS",
+                                  style: Styles.getstyle(
+                                      fontsize: _ui.widthPercent(4),
+                                      fontcolor: ColorPallets.fadegrey,
+                                      fontweight: FontWeight.w700),
+                                )
+                              : Text(
+                                  e.toString(),
+                                  style: Styles.getstyle(
+                                      fontsize: _ui.widthPercent(4),
+                                      fontcolor: ColorPallets.fadegrey,
+                                      fontweight: FontWeight.w700),
+                                );
+                        }).toList(),
                     ],
                   ),
                 ),
@@ -114,7 +132,9 @@ class FollowUpCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        item.createdDate.toString().replaceRange(11, 26, ''),
+                        "Date: " +
+                            controller
+                                .formatDate(item.createdDate.toIso8601String()),
                         style: Styles.getstyle(
                             fontsize: _ui.widthPercent(4),
                             fontcolor: ColorPallets.fadegrey,

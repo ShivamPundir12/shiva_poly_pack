@@ -217,8 +217,9 @@ class NewLeads extends GetView<NewLeadsController> {
                             size: _ui.widthPercent(6),
                           );
                         } else if (snapshot
-                                .data?.leadsWithLargeCustomer.length ==
-                            0) {
+                                    .data?.leadsWithLargeCustomer.length ==
+                                0 ||
+                            snapshot.data?.leadsWithLargeCustomer == null) {
                           return Container(
                             height: _ui.screenHeight / 1.9,
                             alignment: Alignment.center,
@@ -244,25 +245,29 @@ class NewLeads extends GetView<NewLeadsController> {
                         } else {
                           return Container(
                             child: Obx(
-                              () => ListView.builder(
-                                shrinkWrap: true,
-                                physics: AlwaysScrollableScrollPhysics(),
-                                itemCount: controller.largeleadsList.length,
-                                itemBuilder: (context, index) {
-                                  final item = controller.largeleadsList[index];
-                                  return Padding(
-                                    padding: EdgeInsets.only(
-                                        bottom: _ui.heightPercent(0.4)),
-                                    child: Obx(
-                                      () => NewLeadsCard(
-                                        item: item,
-                                        onTap: () => controller.toggle(index),
-                                        isExpanded:
-                                            controller.isExpanded(index),
+                              () => Container(
+                                height: _ui.heightPercent(72),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: AlwaysScrollableScrollPhysics(),
+                                  itemCount: controller.largeleadsList.length,
+                                  itemBuilder: (context, index) {
+                                    final item =
+                                        controller.largeleadsList[index];
+                                    return Padding(
+                                      padding: EdgeInsets.only(
+                                          bottom: _ui.heightPercent(0.4)),
+                                      child: Obx(
+                                        () => NewLeadsCard(
+                                          item: item,
+                                          onTap: () => controller.toggle(index),
+                                          isExpanded:
+                                              controller.isExpanded(index),
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                },
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                           );
@@ -378,7 +383,8 @@ class NewLeads extends GetView<NewLeadsController> {
                           color: ColorPallets.themeColor,
                         );
                       } else if (snapshot.data?.leadsWithSmallCustomer.length ==
-                          0) {
+                              0 ||
+                          snapshot.data?.leadsWithSmallCustomer == null) {
                         return Container(
                           height: _ui.screenHeight / 1.9,
                           alignment: Alignment.center,
@@ -403,23 +409,27 @@ class NewLeads extends GetView<NewLeadsController> {
                         );
                       } else {
                         return Obx(
-                          () => ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: controller.smallleadsList.length,
-                            itemBuilder: (context, index) {
-                              final item = controller.smallleadsList[index];
-                              return Padding(
-                                padding: EdgeInsets.only(
-                                    bottom: _ui.heightPercent(0.4)),
-                                child: Obx(
-                                  () => NewLeadsCard(
-                                    item: item,
-                                    onTap: () => controller.toggle(index),
-                                    isExpanded: controller.isExpanded(index),
+                          () => Container(
+                            height: _ui.heightPercent(71),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: AlwaysScrollableScrollPhysics(),
+                              itemCount: controller.smallleadsList.length,
+                              itemBuilder: (context, index) {
+                                final item = controller.smallleadsList[index];
+                                return Padding(
+                                  padding: EdgeInsets.only(
+                                      bottom: _ui.heightPercent(0.4)),
+                                  child: Obx(
+                                    () => NewLeadsCard(
+                                      item: item,
+                                      onTap: () => controller.toggle(index),
+                                      isExpanded: controller.isExpanded(index),
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
+                                );
+                              },
+                            ),
                           ),
                         );
                       }

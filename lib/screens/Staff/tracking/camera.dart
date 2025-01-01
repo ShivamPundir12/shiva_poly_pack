@@ -3,9 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shiva_poly_pack/data/controller/camera.dart';
+import 'package:shiva_poly_pack/data/controller/local_storage.dart';
 import 'package:shiva_poly_pack/material/bottom_appbar.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
+import 'package:shiva_poly_pack/material/sign_out_dailoge.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
 
 import '../../../material/custom_card.dart';
@@ -44,6 +46,17 @@ class UploadPictureScreen extends GetView<UploadPictureController> {
           'CRM',
           style: Styles.getstyle(fontweight: FontWeight.bold, fontsize: 26),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              SignOutDialog.showSignOutDialog(context);
+            },
+            icon: Icon(
+              Icons.logout,
+              color: ColorPallets.themeColor,
+            ),
+          )
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
@@ -55,23 +68,80 @@ class UploadPictureScreen extends GetView<UploadPictureController> {
           shape: CircleBorder(),
           backgroundColor: ColorPallets.themeColor2,
           tooltip: 'Camera',
-          onPressed: () => controller.navigatetoCamera(),
-          child: Icon(
-            CupertinoIcons.camera,
-            color: ColorPallets.white,
-            size: _ui.heightPercent(3.5),
+          onPressed: () => controller.navigationSet(),
+          child: Obx(
+            () => Icon(
+              controller.toggledPhoto.value
+                  ? CupertinoIcons.camera
+                  : CupertinoIcons.qrcode,
+              color: ColorPallets.white,
+              size: controller.toggledPhoto.value
+                  ? _ui.heightPercent(4)
+                  : _ui.heightPercent(4.5),
+            ),
           ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
         color: ColorPallets.themeColor2,
         shape: CurvedNotchedRectangle(),
+        child: Container(
+          margin: EdgeInsets.symmetric(
+            horizontal: _ui.widthPercent(5),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              GestureDetector(
+                onTap: () => controller.toggleState(),
+                child: Obx(
+                  () => Text(
+                    'Take Photo',
+                    style: Styles.getstyle(
+                      fontcolor: controller.toggledPhoto.value
+                          ? ColorPallets.white
+                          : Colors.black.withOpacity(0.4),
+                      fontweight: controller.toggledPhoto.value
+                          ? FontWeight.bold
+                          : FontWeight.w300,
+                      fontsize: controller.toggledPhoto.value
+                          ? _ui.widthPercent(5)
+                          : _ui.widthPercent(4.5),
+                    ),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => controller.toggleState(),
+                child: Obx(
+                  () => Text(
+                    'Scan QR',
+                    style: Styles.getstyle(
+                      fontcolor: controller.toggledPhoto.value
+                          ? Colors.black.withOpacity(0.4)
+                          : ColorPallets.white,
+                      fontweight: controller.toggledPhoto.value
+                          ? FontWeight.w300
+                          : FontWeight.bold,
+                      fontsize: controller.toggledPhoto.value
+                          ? _ui.widthPercent(4.5)
+                          : _ui.widthPercent(5),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
         notchMargin: 18.0,
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
-            vertical: _ui.heightPercent(1), horizontal: _ui.widthPercent(3)),
+          vertical: _ui.heightPercent(1),
+          horizontal: _ui.widthPercent(5),
+        ),
         child: GridView.builder(
+          physics: NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 16.0,

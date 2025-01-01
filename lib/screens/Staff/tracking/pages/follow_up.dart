@@ -99,7 +99,7 @@ class FollowUpScreen extends GetView<FollowUp> {
                         InkWell(
                           borderRadius: BorderRadius.circular(14),
                           radius: _ui.widthPercent(1),
-                          onTap: () =>controller.selectOption(context),
+                          onTap: () => controller.selectOption(context),
                           child: Card(
                             shape: RoundedRectangleBorder(
                               side: BorderSide(
@@ -155,84 +155,68 @@ class FollowUpScreen extends GetView<FollowUp> {
             FutureBuilder<FollowUpResponse>(
                 future: controller.getApiData(),
                 builder: (context, snapshot) {
-                  final data = snapshot.data;
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return ProgressIndicatorWidget(
                       color: ColorPallets.themeColor,
                     );
-                  } else if (data?.followUp.length == 0) {
-                    return Container(
-                      height: _ui.screenHeight / 1.9,
-                      alignment: Alignment.center,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.cloud_off,
-                            size: _ui.heightPercent(14),
-                            color: ColorPallets.themeColor,
-                          ),
-                          Text(
-                            'No Data..',
-                            style: Styles.getstyle(
-                              fontweight: FontWeight.w600,
-                              fontsize: _ui.widthPercent(5),
-                            ),
-                          )
-                        ],
-                      ),
-                    );
                   } else {
-                    return Expanded(
-                      child: ListView.builder(
-                        itemCount: controller.followUpList.length,
-                        itemBuilder: (context, index) {
-                          final item = controller.followUpList[index];
-                          return Padding(
-                            padding: EdgeInsets.only(
-                              bottom: _ui.heightPercent(0.4),
-                            ),
-                            child: FollowUpCard(
-                              item: item,
-                              eyeonTap: () async {
-                                controller.getFollowUpData(item.id.toString());
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => FollowUpListDialog(
-                                    followUpData: [],
-                                    name: item.name,
-                                  ),
-                                );
-                              },
-                              onTap: () {
-                                FollowupDialog.showFollowUpDialog(context);
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    );
+                    return Obx(() {
+                      return controller.followUpList.isEmpty
+                          ? _noData(ui: _ui)
+                          : Expanded(
+                              child: ListView.builder(
+                                itemCount: controller.followUpList.length,
+                                itemBuilder: (context, index) {
+                                  final item = controller.followUpList[index];
+                                  return Padding(
+                                    padding: EdgeInsets.only(
+                                      bottom: _ui.heightPercent(0.4),
+                                    ),
+                                    child: FollowUpCard(
+                                      item: item,
+                                      eyeonTap: () async {
+                                        controller.getFollowUpData(
+                                            item.id.toString());
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                FollowUpListScreen(
+                                              name: item.name,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      onTap: () {
+                                        FollowupDialog.showFollowUpDialog(
+                                            context, item.id.toString());
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                    });
                   }
                 }),
-            if (controller.followUpList.isNotEmpty)
-              // Pagination controls
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.chevron_left),
-                    onPressed: () {},
-                  ),
-                  Text('1 2 ... 99'),
-                  IconButton(
-                    icon: Icon(Icons.chevron_right),
-                    onPressed: () {
-                      // Implement next page logic
-                    },
-                  ),
-                ],
-              ),
+            // if (controller.followUpList.isNotEmpty)
+            //   // Pagination controls
+            //   Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       IconButton(
+            //         icon: Icon(Icons.chevron_left),
+            //         onPressed: () {},
+            //       ),
+            //       Text('1 2 ... 99'),
+            //       IconButton(
+            //         icon: Icon(Icons.chevron_right),
+            //         onPressed: () {
+            //           // Implement next page logic
+            //         },
+            //       ),
+            //     ],
+            //   ),
           ],
         ),
       ),
@@ -346,6 +330,40 @@ class FollowUpScreen extends GetView<FollowUp> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _noData extends StatelessWidget {
+  const _noData({
+    required ResponsiveUI ui,
+  }) : _ui = ui;
+
+  final ResponsiveUI _ui;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: _ui.screenHeight / 1.9,
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.cloud_off,
+            size: _ui.heightPercent(14),
+            color: ColorPallets.themeColor,
+          ),
+          Text(
+            'No Data..',
+            style: Styles.getstyle(
+              fontweight: FontWeight.w600,
+              fontsize: _ui.widthPercent(5),
+            ),
+          )
+        ],
       ),
     );
   }

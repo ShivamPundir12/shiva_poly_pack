@@ -84,11 +84,11 @@ class WelcomeScreen extends StatelessWidget {
                           fontweight: FontWeight.w600,
                           fontcolor: ColorPallets.fadegrey2),
                     ),
-                    InkWell(
-                      onTap: () => Get.toNamed(Routes.account_typ),
-                      child: Container(
-                        height: _ui.heightPercent(12),
-                        alignment: Alignment.bottomLeft,
+                    Container(
+                      height: _ui.heightPercent(12),
+                      alignment: Alignment.bottomLeft,
+                      child: InkWell(
+                        onTap: () => Get.toNamed(Routes.account_typ),
                         child: Chip(
                           backgroundColor: ColorPallets.themeColor,
                           labelPadding: EdgeInsets.symmetric(

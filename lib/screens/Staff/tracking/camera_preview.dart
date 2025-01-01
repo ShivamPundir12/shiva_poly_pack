@@ -1,7 +1,9 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shiva_poly_pack/data/controller/camera.dart';
+import 'package:shiva_poly_pack/data/injection/permission.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 
@@ -12,6 +14,8 @@ class CameraScreen extends GetView<UploadPictureController> {
 
   @override
   Widget build(BuildContext context) {
+    requestPermissions(context);
+
     ResponsiveUI _ui = ResponsiveUI(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,

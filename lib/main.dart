@@ -1,28 +1,32 @@
-import 'package:device_preview/device_preview.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:shiva_poly_pack/data/controller/local_storage.dart';
-import 'package:shiva_poly_pack/data/injection/permission.dart';
 import 'package:shiva_poly_pack/data/injection/routes.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/routes/app_routes.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    DevicePreview(
-      enabled: !kReleaseMode, // Enable only in debug mode
-      builder: (context) => const MyApp(),
-    ),
+    const MyApp(),
   );
-  WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((c) async {
-    await requestPermissions();
-    // LocalStorageManager.clearAllData();
-  });
+  // LocalStorageManager.clearAllData();
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    GetStorage.init();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

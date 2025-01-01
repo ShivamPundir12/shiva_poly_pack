@@ -22,7 +22,7 @@ class PendingFile {
   final String location;
   final String? tagsId;
   final String? businessTypeTagsId;
-  final String? agentId;
+  final int? agentId;
   final String userId;
   final DateTime followUpDate;
   final String? additionalNote;

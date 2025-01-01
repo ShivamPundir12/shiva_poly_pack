@@ -28,7 +28,7 @@ class Tag {
   final int id;
   final String name;
   final String color;
-  final bool isBusinessTag;
+  final bool? isBusinessTag;
   final String createdDate;
   final String fontColor;
 
@@ -47,7 +47,7 @@ class Tag {
       id: json['id'],
       name: json['name'],
       color: json['color'] ?? '',
-      isBusinessTag: json['isBusinessTag'],
+      isBusinessTag: json['isBusinessTag'] ?? null,
       createdDate: json['createdDate'],
       fontColor: json['fontColor'] ?? '',
     );
