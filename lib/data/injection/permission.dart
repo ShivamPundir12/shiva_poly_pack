@@ -51,6 +51,8 @@ class CameraPermissionHandler {
   static Future<void> requestCameraPermission(BuildContext context) async {
     PermissionStatus status = await Permission.camera.status;
     PermissionStatus micStatus = await Permission.microphone.status;
+    PermissionStatus bluetoothPermisson = await Permission.bluetooth.status;
+    final bluetooth = await Permission.bluetoothConnect.request();
 
     if (status.isDenied) {
       // If the permission is denied, request it
@@ -58,6 +60,38 @@ class CameraPermissionHandler {
       Get.snackbar('Note', 'Please restart the app to use camera');
     } else if (micStatus.isDenied) {
       micStatus = await Permission.microphone.request();
+    }
+
+    if (bluetooth.isDenied) {
+      Get.snackbar('Note', 'Bluetooth Permission is required');
+      await Permission.bluetoothConnect.request();
+    } else if (bluetooth.isPermanentlyDenied) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Bluetooth Permission Needed'),
+            content: const Text(
+              'Bluetooth access is required to take photos. Please enable it in the app settings.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  openAppSettings(); // Open the app settings
+                },
+                child: const Text('Open Settings'),
+              ),
+            ],
+          );
+        },
+      );
     }
 
     if (status.isPermanentlyDenied) {

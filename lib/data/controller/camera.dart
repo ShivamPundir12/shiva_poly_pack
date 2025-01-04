@@ -16,7 +16,6 @@ import 'package:shiva_poly_pack/routes/app_routes.dart';
 import 'package:geocoding/geocoding.dart';
 
 class UploadPictureController extends GetxController {
-  final NewLeadsController _leadsController = Get.find<NewLeadsController>();
   late CameraController cameraController;
   RxBool isCameraInitialized = false.obs;
   RxString imagePath = ''.obs;
@@ -25,6 +24,7 @@ class UploadPictureController extends GetxController {
   RxDouble latitude = 0.0.obs;
   RxString locationName = ''.obs;
   RxBool toggledPhoto = true.obs;
+  RxBool toggledScanner = false.obs;
   RxDouble longitude = 0.0.obs;
   RxBool isCameraPreviewVisible = true.obs;
   final String storageKey = 'photo_metadata';
@@ -39,8 +39,14 @@ class UploadPictureController extends GetxController {
     initializeCamera();
   }
 
-  Future<void> toggleState() async {
-    toggledPhoto.value = !toggledPhoto.value;
+  Future<void> toggleState(String state) async {
+    if (state == 'photo') {
+      toggledPhoto.value = true;
+      toggledScanner.value = false;
+    } else {
+      toggledPhoto.value = false;
+      toggledScanner.value = true;
+    }
     update();
   }
 

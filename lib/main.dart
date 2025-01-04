@@ -7,7 +7,6 @@ import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/routes/app_routes.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     const MyApp(),
   );

@@ -93,7 +93,7 @@ class UploadPictureScreen extends GetView<UploadPictureController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               GestureDetector(
-                onTap: () => controller.toggleState(),
+                onTap: () => controller.toggleState('photo'),
                 child: Obx(
                   () => Text(
                     'Take Photo',
@@ -112,7 +112,7 @@ class UploadPictureScreen extends GetView<UploadPictureController> {
                 ),
               ),
               GestureDetector(
-                onTap: () => controller.toggleState(),
+                onTap: () => controller.toggleState('scanner'),
                 child: Obx(
                   () => Text(
                     'Scan QR',

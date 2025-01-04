@@ -1,42 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:ai_barcode_scanner/ai_barcode_scanner.dart';
 import '../../../data/controller/qr_controller.dart';
 
 class QRScannerScreen extends GetView<QRScannerController> {
-  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  final ImagePicker _picker = ImagePicker();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('QR Code Scanner'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.photo_library),
-            onPressed: () async {
-              try {
-                final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-                if (pickedFile != null) {
-                  controller.handleQRCodeFromGallery(File(pickedFile.path));
-                }
-              } catch (e) {
-                Get.snackbar('Error', 'Failed to pick image: $e');
-              }
-            },
-          ),
-        ],
-      ),
       body: Column(
         children: <Widget>[
           Expanded(
             flex: 5,
-            child: MobileScanner(
-              key: qrKey,
-              onDetect: (barcodeCapture) {
+            child: AiBarcodeScanner(
+              controller: MobileScannerController(
+                detectionSpeed: DetectionSpeed.noDuplicates,
+              ),
+              onDetect: (BarcodeCapture barcodeCapture) {
                 final barcodes = barcodeCapture.barcodes;
                 for (final barcode in barcodes) {
                   final String? code = barcode.rawValue;
@@ -45,13 +24,28 @@ class QRScannerScreen extends GetView<QRScannerController> {
                   }
                 }
               },
-              controller: controller.qrViewController,
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Center(
-              child: Text('Scan a QR code'),
+              validator: (BarcodeCapture capture) {
+                // Example validation logic
+                if (capture.barcodes.isEmpty) return false;
+                return true; // Accept all scanned barcodes
+              },
+              onDispose: () {
+                debugPrint("Barcode scanner disposed!");
+              },
+              // customOverlayBuilder: (p0, p1, p2) => Container(
+              //   decoration: BoxDecoration(
+              //     border: Border.all(
+              //       color: Colors.red,
+              //       width: 3,
+              //     ),
+              //   ),
+              //   child: Center(
+              //     child: Text(
+              //       "Scanning...",
+              //       style: TextStyle(color: Colors.white),
+              //     ),
+              //   ),
+              // ),
             ),
           ),
         ],
