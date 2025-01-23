@@ -1,5 +1,59 @@
 import 'dart:convert';
 
+class CrmListModelResponse {
+  final String message;
+  final List<CRMListModel> data;
+  final Pagination pagination;
+
+  CrmListModelResponse({
+    required this.message,
+    required this.data,
+    required this.pagination,
+  });
+
+  // Factory to create a FinalCustomerModel from JSON
+  factory CrmListModelResponse.fromJson(Map<String, dynamic> json) {
+    return CrmListModelResponse(
+      message: json['message'] as String,
+      data: (json['data'] as List<dynamic>)
+          .map((e) => CRMListModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      pagination: Pagination.fromJson(json['pagination']),
+    );
+  }
+
+  // Convert the model back to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'message': message,
+      'data': data.map((e) => e.toJson()).toList(),
+    };
+  }
+}
+
+class Pagination {
+  final int currentPage;
+  final int pageSize;
+  final int totalRecords;
+  final int totalPages;
+
+  Pagination({
+    required this.currentPage,
+    required this.pageSize,
+    required this.totalRecords,
+    required this.totalPages,
+  });
+
+  factory Pagination.fromJson(Map<String, dynamic> json) {
+    return Pagination(
+      currentPage: json['currentPage'],
+      pageSize: json['pageSize'],
+      totalRecords: json['totalRecords'],
+      totalPages: json['totalPages'],
+    );
+  }
+}
+
 class CRMListModel {
   String name;
   int id;

@@ -1,8 +1,13 @@
 class PendingFilesResponse {
   final String message;
-  final List<dynamic> pendingFiles;
+  final List<PendingFile> pendingFiles;
+  final Pagination pagination;
 
-  PendingFilesResponse({required this.message, required this.pendingFiles});
+  PendingFilesResponse({
+    required this.message,
+    required this.pendingFiles,
+    required this.pagination,
+  });
 
   factory PendingFilesResponse.fromJson(Map<String, dynamic> json) {
     return PendingFilesResponse(
@@ -10,6 +15,30 @@ class PendingFilesResponse {
       pendingFiles: (json['data'] as List<dynamic>)
           .map((item) => PendingFile.fromJson(item))
           .toList(),
+      pagination: Pagination.fromJson(json['pagination']),
+    );
+  }
+}
+
+class Pagination {
+  final int currentPage;
+  final int pageSize;
+  final int totalRecords;
+  final int totalPages;
+
+  Pagination({
+    required this.currentPage,
+    required this.pageSize,
+    required this.totalRecords,
+    required this.totalPages,
+  });
+
+  factory Pagination.fromJson(Map<String, dynamic> json) {
+    return Pagination(
+      currentPage: json['currentPage'],
+      pageSize: json['pageSize'],
+      totalRecords: json['totalRecords'],
+      totalPages: json['totalPages'],
     );
   }
 }

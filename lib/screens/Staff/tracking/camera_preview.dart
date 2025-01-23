@@ -14,7 +14,9 @@ class CameraScreen extends GetView<UploadPictureController> {
 
   @override
   Widget build(BuildContext context) {
-    requestPermissions(context);
+    WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((v) {
+      requestPermissions(context);
+    });
 
     ResponsiveUI _ui = ResponsiveUI(context);
     return Scaffold(

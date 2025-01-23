@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -71,6 +73,14 @@ class FollowUpScreen extends GetView<FollowUp> {
                   alignment: Alignment.centerLeft,
                   width: _ui.widthPercent(40),
                   child: TextField(
+                    onChanged: (value) {
+                      if (value.isEmpty) {
+                        controller.searchData(value);
+                      } else {
+                        controller.filterpostfollowUpList.clear();
+                        controller.getApiData(1);
+                      }
+                    },
                     decoration: InputDecoration(
                       hintText: 'Search',
                       fillColor: ColorPallets.themeColor,
@@ -152,71 +162,137 @@ class FollowUpScreen extends GetView<FollowUp> {
               ],
             ),
             SizedBox(height: 16.0),
-            FutureBuilder<FollowUpResponse>(
-                future: controller.getApiData(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return ProgressIndicatorWidget(
-                      color: ColorPallets.themeColor,
-                    );
-                  } else {
-                    return Obx(() {
-                      return controller.followUpList.isEmpty
-                          ? _noData(ui: _ui)
-                          : Expanded(
-                              child: ListView.builder(
-                                itemCount: controller.followUpList.length,
-                                itemBuilder: (context, index) {
-                                  final item = controller.followUpList[index];
-                                  return Padding(
-                                    padding: EdgeInsets.only(
-                                      bottom: _ui.heightPercent(0.4),
-                                    ),
-                                    child: FollowUpCard(
-                                      item: item,
-                                      eyeonTap: () async {
-                                        controller.getFollowUpData(
-                                            item.id.toString());
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                FollowUpListScreen(
-                                              name: item.name,
-                                            ),
+            Obx(() {
+              if (controller.filterpostfollowUpList.isNotEmpty) {
+                if (controller.isloading.value) {
+                  return ProgressIndicatorWidget(
+                    color: ColorPallets.themeColor,
+                  );
+                } else {
+                  return Obx(() {
+                    return controller.filterpostfollowUpList.isEmpty
+                        ? _noData(ui: _ui)
+                        : Expanded(
+                            child: ListView.builder(
+                              itemCount:
+                                  controller.filterpostfollowUpList.length,
+                              itemBuilder: (context, index) {
+                                final item =
+                                    controller.filterpostfollowUpList[index];
+                                return Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom: _ui.heightPercent(0.4),
+                                  ),
+                                  child: FollowUpCard(
+                                    item: item,
+                                    eyeonTap: () async {
+                                      controller.getFollowUpData(
+                                          id: item.id.toString());
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              FollowUpListScreen(
+                                            name: item.name,
                                           ),
-                                        );
-                                      },
-                                      onTap: () {
-                                        FollowupDialog.showFollowUpDialog(
-                                            context, item.id.toString());
-                                      },
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
+                                        ),
+                                      );
+                                    },
+                                    onTap: () {
+                                      FollowupDialog.showFollowUpDialog(
+                                          context, item.id.toString());
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                  });
+                }
+              } else {
+                return FutureBuilder<FollowUpResponse>(
+                    future: controller.getApiData(controller.currentPage.value),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return ProgressIndicatorWidget(
+                          color: ColorPallets.themeColor,
+                        );
+                      } else {
+                        return Obx(() {
+                          return controller.followUpList.isEmpty
+                              ? _noData(ui: _ui)
+                              : Expanded(
+                                  child: ListView.builder(
+                                    itemCount: controller.followUpList.length,
+                                    itemBuilder: (context, index) {
+                                      final item =
+                                          controller.followUpList[index];
+                                      return Padding(
+                                        padding: EdgeInsets.only(
+                                          bottom: _ui.heightPercent(0.4),
+                                        ),
+                                        child: FollowUpCard(
+                                          item: item,
+                                          eyeonTap: () async {
+                                            controller.getFollowUpData(
+                                                id: item.id.toString());
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    FollowUpListScreen(
+                                                  name: item.name,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          onTap: () {
+                                            FollowupDialog.showFollowUpDialog(
+                                                context, item.id.toString());
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                        });
+                      }
                     });
-                  }
-                }),
-            // if (controller.followUpList.isNotEmpty)
-            //   // Pagination controls
-            //   Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //     children: [
-            //       IconButton(
-            //         icon: Icon(Icons.chevron_left),
-            //         onPressed: () {},
-            //       ),
-            //       Text('1 2 ... 99'),
-            //       IconButton(
-            //         icon: Icon(Icons.chevron_right),
-            //         onPressed: () {
-            //           // Implement next page logic
-            //         },
-            //       ),
-            //     ],
-            //   ),
+              }
+            }),
+            Obx(() {
+              if (controller.followUpList.isNotEmpty &&
+                  controller.total_pages.value > 1) {
+                // Pagination controls
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.chevron_left),
+                      onPressed: () {
+                        if (!controller.isLastPage.value) {
+                          controller.prevPage(true);
+                        }
+                      },
+                    ),
+                    Obx(() => Text(controller.currentPage.value.toString() +
+                        " of " +
+                        controller.total_pages.value.toString())),
+                    IconButton(
+                      icon: Icon(Icons.chevron_right),
+                      onPressed: () {
+                        print('Length : ${controller.followUpList.length}');
+                        if (!controller.isLastPage.value) {
+                          controller.nextPage(true);
+                        }
+                      },
+                    ),
+                  ],
+                );
+              } else {
+                return SizedBox.shrink();
+              }
+            }),
           ],
         ),
       ),

@@ -125,7 +125,7 @@ class SignIn extends GetView<SingInController> {
                               maxLength: 10,
                               controller: controller.contactController,
                               onTap: controller.ontapped,
-                              focusNode: focusNode,
+                              // focusNode: focusNode,
                               onChanged: (value) {
                                 print('object');
                               },

@@ -4,10 +4,12 @@ import 'package:shiva_poly_pack/data/model/final_customer.dart';
 import 'package:shiva_poly_pack/data/model/tag_list.dart';
 import 'package:shiva_poly_pack/data/services/api_service.dart';
 
+import '../../material/indicator.dart';
 import '../model/follow_up.dart';
 
 class FinalCustomerController extends GetxController {
   RxList<FinalCustomerData> customerList = <FinalCustomerData>[].obs;
+  RxList<FinalCustomerData> filtercustomerList = <FinalCustomerData>[].obs;
   ApiService _apiService = ApiService();
   RxString selectedOption = 'Z-A'.obs;
   RxString time = ''.obs;
@@ -17,6 +19,16 @@ class FinalCustomerController extends GetxController {
   final RxString selectedTag = ''.obs;
   final RxInt selectedTagId = 0.obs;
   var tagList = <Tag>[].obs;
+  RxBool isLastPage = false.obs;
+  RxBool isloading = false.obs;
+  RxInt currentPage = 1.obs;
+  final int pageSize = 10; // You can adjust this based on your API's page size
+  RxInt total_pages = 0.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+  }
 
   Future<void> saveFollowUp(String selectedcrmID) async {
     print('Follow up Date: ${followUpDateController.text}');
@@ -33,7 +45,7 @@ class FinalCustomerController extends GetxController {
       if (v.data.id != 0) {
         Get.snackbar("Success", "FollowUp Created Successfully",
             backgroundColor: Colors.green, colorText: Colors.white);
-        await getFollowUpData();
+        await getFollowUpData(currentPage.value);
       } else {
         Get.snackbar('Error', 'Failed to add follow up',
             backgroundColor: Colors.red, colorText: Colors.white);
@@ -63,6 +75,26 @@ class FinalCustomerController extends GetxController {
     return dateTime;
   }
 
+  Future<FinalCustomerModel> searchData(String searchValue) async {
+    isloading.value = true;
+    filtercustomerList.clear();
+    final files = await _apiService.fetchFinalCustomer(
+        getToken(), currentPage.value,
+        searchValue: searchValue);
+    bool hasdata =
+        filtercustomerList.any((e) => files.data.any((v) => e.id == v.id));
+    if (files.data.isNotEmpty) {
+      filtercustomerList.addAllIf(!hasdata, files.data);
+    } else {
+      isLastPage.value = true;
+    }
+    Future.delayed(Duration(milliseconds: 1000), () {
+      isloading.value = false;
+    });
+    update();
+    return files;
+  }
+
   void sortLeads() {
     if (selectedOption.value == 'A-Z') {
 // Sort A-Z
@@ -75,9 +107,39 @@ class FinalCustomerController extends GetxController {
     print('Leads List: ${customerList.first.location}');
   }
 
-  Future<FinalCustomerModel> getFollowUpData() async {
-    final finalcustomerList = await _apiService.fetchFinalCustomer(getToken());
-    customerList.value = finalcustomerList.data;
+  Future<void> prevPage() async {
+    LoadingView.show();
+    await getFollowUpData(currentPage.value - 1);
+    LoadingView.hide();
+    update();
+  }
+
+  Future<void> nextPage() async {
+    LoadingView.show();
+    await getFollowUpData(currentPage.value + 1);
+    LoadingView.hide();
+    update();
+  }
+
+  Future<FinalCustomerModel> getFollowUpData(int page) async {
+    final finalcustomerList =
+        await _apiService.fetchFinalCustomer(getToken(), currentPage.value);
+    bool hasdata = customerList
+        .any((e) => finalcustomerList.data.any((v) => e.id != v.id));
+    if (finalcustomerList.data.isNotEmpty) {
+      if (page == 1) {
+        customerList.assignAll(finalcustomerList.data);
+      } else {
+        // customerList.addAllIf(!hasdata, finalcustomerList.data);
+        customerList.value = finalcustomerList.data;
+      }
+
+      currentPage.value = page;
+      isLastPage.value = currentPage >= finalcustomerList.pagination.totalPages;
+      total_pages.value = finalcustomerList.pagination.totalPages;
+    } else {
+      isLastPage.value = true;
+    }
     update();
     return finalcustomerList;
   }

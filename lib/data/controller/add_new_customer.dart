@@ -217,7 +217,7 @@ class AddCustomerController extends GetxController {
     Future.delayed(Durations.medium4);
     final result = await Get.toNamed(Routes.add_new_cus);
     if (result != null) {
-      await _pendingFilesController.getApiData();
+      await _pendingFilesController.getApiData(1);
     }
     update();
   }

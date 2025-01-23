@@ -1,10 +1,12 @@
 class FinalCustomerModel {
   final String message;
   final List<FinalCustomerData> data;
+  final Pagination pagination;
 
   FinalCustomerModel({
     required this.message,
     required this.data,
+    required this.pagination,
   });
 
   // Factory to create a FinalCustomerModel from JSON
@@ -14,6 +16,7 @@ class FinalCustomerModel {
       data: (json['data'] as List<dynamic>)
           .map((e) => FinalCustomerData.fromJson(e as Map<String, dynamic>))
           .toList(),
+      pagination: Pagination.fromJson(json['pagination']),
     );
   }
 
@@ -23,6 +26,29 @@ class FinalCustomerModel {
       'message': message,
       'data': data.map((e) => e.toJson()).toList(),
     };
+  }
+}
+
+class Pagination {
+  final int currentPage;
+  final int pageSize;
+  final int totalRecords;
+  final int totalPages;
+
+  Pagination({
+    required this.currentPage,
+    required this.pageSize,
+    required this.totalRecords,
+    required this.totalPages,
+  });
+
+  factory Pagination.fromJson(Map<String, dynamic> json) {
+    return Pagination(
+      currentPage: json['currentPage'],
+      pageSize: json['pageSize'],
+      totalRecords: json['totalRecords'],
+      totalPages: json['totalPages'],
+    );
   }
 }
 

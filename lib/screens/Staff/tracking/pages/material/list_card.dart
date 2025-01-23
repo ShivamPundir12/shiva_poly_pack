@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shiva_poly_pack/data/controller/crm_list.dart';
+import 'package:shiva_poly_pack/data/model/crm_list.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/indicator.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
@@ -11,15 +12,15 @@ import '../../../../../material/follow_up_dialoge.dart';
 
 class CustomerCard extends GetView<CRMListController> {
   final int index;
-
+  final CRMListModel customer;
   const CustomerCard({
     super.key,
     required this.index,
+    required this.customer,
   });
 
   @override
   Widget build(BuildContext context) {
-    final customer = controller.customerList[index];
     ResponsiveUI _ui = ResponsiveUI(context);
     controller.getTagListData();
     return Card(
@@ -37,7 +38,7 @@ class CustomerCard extends GetView<CRMListController> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              width: 150,
+              width: _ui.widthPercent(38),
               child: Text(
                 customer.name.capitalize.toString(),
                 style:
@@ -57,7 +58,7 @@ class CustomerCard extends GetView<CRMListController> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    fixedSize: Size(_ui.widthPercent(30), _ui.heightPercent(5)),
+                    fixedSize: Size(_ui.widthPercent(26), _ui.heightPercent(5)),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14)),
                     backgroundColor: ColorPallets.themeColor,
@@ -67,16 +68,17 @@ class CustomerCard extends GetView<CRMListController> {
                     style: Styles.getstyle(
                       fontcolor: ColorPallets.white,
                       fontsize: _ui.widthPercent(3),
-                      fontweight: FontWeight.bold,
+                      fontweight: FontWeight.w400,
                     ),
                   ),
                 ),
-                SizedBox(width: _ui.widthPercent(1)),
+                SizedBox(width: _ui.widthPercent(2)),
                 InkWell(
                   radius: 200,
                   borderRadius: BorderRadius.circular(200),
                   onTap: () {
-                    controller.fetchfollowUp(customer.id.toString());
+                    controller.fetchfollowUp(
+                        customer.id.toString(), controller.currentPage.value);
                     Get.to(
                       FollowUpListScreen(name: customer.name),
                     );

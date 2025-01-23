@@ -175,6 +175,7 @@ class FollowUpListScreen extends GetView<FollowUp> {
                               )
                             : Text(
                                 "Review: ${data.review}",
+                                overflow: TextOverflow.visible,
                                 style: const TextStyle(color: Colors.grey),
                               ),
                         trailing: data.tagsName.isEmpty
@@ -351,6 +352,40 @@ class FollowUpListScreen extends GetView<FollowUp> {
               ),
             ),
           ),
+          Obx(() {
+            if (controller.postfollowUpList.isNotEmpty &&
+                controller.post_followUp_total_pages.value > 1) {
+              // Pagination controls
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.chevron_left),
+                    onPressed: () {
+                      if (controller.post_followUp_current_page.value > 1) {
+                        controller.prevPage(false);
+                      }
+                    },
+                  ),
+                  Obx(() => Text(controller.post_followUp_current_page.value
+                          .toString() +
+                      " of " +
+                      controller.post_followUp_total_pages.value.toString())),
+                  IconButton(
+                    icon: Icon(Icons.chevron_right),
+                    onPressed: () {
+                      print('Length : ${controller.postfollowUpList.length}');
+                      if (!controller.isLastPage.value) {
+                        controller.nextPage(false);
+                      }
+                    },
+                  ),
+                ],
+              );
+            } else {
+              return SizedBox.shrink();
+            }
+          }),
         ],
       ),
     );

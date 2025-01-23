@@ -15,14 +15,16 @@ class FollowUpItem {
 }
 
 class FollowUpResponse {
-  final List<dynamic> followUp;
-  FollowUpResponse({required this.followUp});
+  final List<FollowupModel> followUp;
+  final Pagination pagination;
+  FollowUpResponse({required this.followUp, required this.pagination});
 
   factory FollowUpResponse.fromJson(Map<String, dynamic> json) {
     return FollowUpResponse(
-      followUp: (json['todayFollowUpList'] as List<dynamic>)
+      followUp: (json['data'] as List<dynamic>)
           .map((item) => FollowupModel.fromJson(item))
           .toList(),
+      pagination: Pagination.fromJson(json['pagination']),
     );
   }
 }
@@ -50,6 +52,29 @@ class FollowUpDecode {
       'message': message,
       'data': data.toJson(),
     };
+  }
+}
+
+class Pagination {
+  final int currentPage;
+  final int pageSize;
+  final int totalRecords;
+  final int totalPages;
+
+  Pagination({
+    required this.currentPage,
+    required this.pageSize,
+    required this.totalRecords,
+    required this.totalPages,
+  });
+
+  factory Pagination.fromJson(Map<String, dynamic> json) {
+    return Pagination(
+      currentPage: json['currentPage'],
+      pageSize: json['pageSize'],
+      totalRecords: json['totalRecords'],
+      totalPages: json['totalPages'],
+    );
   }
 }
 
@@ -165,6 +190,28 @@ class CreateFollowupModel {
       'review': review,
       'tagsId': tags,
     };
+  }
+}
+
+class PostedFollowUpResponse {
+  final String message;
+  final List<PostedFollowUp> pendingFiles;
+  final Pagination pagination;
+
+  PostedFollowUpResponse({
+    required this.message,
+    required this.pendingFiles,
+    required this.pagination,
+  });
+
+  factory PostedFollowUpResponse.fromJson(Map<String, dynamic> json) {
+    return PostedFollowUpResponse(
+      message: json['message'],
+      pendingFiles: (json['data'] as List<dynamic>)
+          .map((item) => PostedFollowUp.fromJson(item))
+          .toList(),
+      pagination: Pagination.fromJson(json['pagination']),
+    );
   }
 }
 

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:shiva_poly_pack/data/model/follow_up.dart';
 import 'package:shiva_poly_pack/data/model/tag_list.dart';
 import 'package:shiva_poly_pack/data/services/api_service.dart';
+
+import '../../material/indicator.dart';
 
 class FollowUp extends GetxController {
   // Define sorting options
@@ -15,7 +18,10 @@ class FollowUp extends GetxController {
   final RxInt selectedTagId = 0.obs;
   var followUpList = <FollowupModel>[].obs;
   var postfollowUpList = <PostedFollowUp>[].obs;
+  var filterpostfollowUpList = <FollowupModel>[].obs;
   var tagList = <Tag>[].obs;
+  RxInt post_followUp_total_pages = 0.obs;
+  RxInt post_followUp_current_page = 0.obs;
 
   final TextEditingController followUpDateController = TextEditingController();
   final TextEditingController reviewController = TextEditingController();
@@ -31,6 +37,17 @@ class FollowUp extends GetxController {
     'DESIGN IN PROCESS',
     'ORDER CONFIRMED',
   ];
+
+  RxBool isLastPage = false.obs;
+  RxBool isloading = false.obs;
+  RxInt currentPage = 1.obs;
+  RxInt total_pages = 0.obs;
+  final int pageSize = 10; // You can adjust this based on your API's page size
+
+  @override
+  void onInit() {
+    super.onInit();
+  }
 
   DateTime convertToISO8601(String inputDate) {
     // Parse the input date assuming the format "dd-MM-yyyy"
@@ -74,7 +91,7 @@ class FollowUp extends GetxController {
       );
       await _apiService.createFollowUp(request, getToken()).then((v) async {
         if (v.data.id != 0) {
-          await getApiData();
+          await getApiData(currentPage.value);
         }
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -107,26 +124,79 @@ class FollowUp extends GetxController {
     sortLeads();
   }
 
-  Future<FollowUpResponse> getApiData() async {
-    final followUp = await _apiService.fetchFollowUp(getToken());
-    followUpList.value = followUp.followUp as List<FollowupModel>;
+  Future<void> nextPage(bool followUp) async {
+    if (followUp) {
+      LoadingView.show();
+      await getApiData(currentPage.value + 1);
+      LoadingView.hide();
+      update();
+    } else {
+      LoadingView.show();
+      await getFollowUpData(page: post_followUp_current_page.value + 1);
+      LoadingView.hide();
+      update();
+    }
+  }
+
+  Future<void> prevPage(bool followUp) async {
+    if (followUp) {
+      LoadingView.show();
+      await getApiData(currentPage.value - 1);
+      LoadingView.hide();
+      update();
+    } else {
+      LoadingView.show();
+      await getFollowUpData(page: post_followUp_current_page.value - 1);
+      LoadingView.hide();
+      update();
+    }
+  }
+
+  Future<FollowUpResponse> getApiData(int page) async {
+    final followUp = await _apiService.fetchFollowUp(getToken(), page);
+    if (followUp.followUp.isNotEmpty) {
+      if (page == 1) {
+        followUpList.assignAll(followUp.followUp);
+      } else {
+        // followUpList.addAllIf(
+        //     !hasdata, followUp.followUp as List<FollowupModel>);
+        followUpList.value = followUp.followUp;
+      }
+      currentPage.value = page;
+      isLastPage.value = currentPage >= followUp.pagination.totalPages;
+    } else {
+      isLastPage.value = true;
+    }
     update();
     return followUp;
   }
 
-  Future<void> getFollowUpData(String id) async {
-    final followUp = await _apiService.fetchPostedFollowUp(getToken(), id);
-    // Ensure the response is a List
-    if (followUp.isNotEmpty) {
-      postfollowUpList.value = followUp.map((e) {
-        return PostedFollowUp(
-          customerName: e['customerName'] ?? '',
-          followupDate: DateTime.parse(e['followupDate']),
-          review: e['review'] ?? '',
-          tags: PostedFollowUp.parseTags(e['tags']),
-          tagsName: e['tagsName'] ?? [],
-        );
-      }).toList();
+  Future<FollowUpResponse> searchData(String searchValue) async {
+    isloading.value = true;
+    filterpostfollowUpList.clear();
+    final files = await _apiService.fetchFollowUp(getToken(), currentPage.value,
+        searchValue: searchValue);
+    bool hasdata = filterpostfollowUpList
+        .any((e) => files.followUp.any((v) => e.id != v.id));
+    if (files.followUp.isNotEmpty) {
+      filterpostfollowUpList.addAllIf(!hasdata, files.followUp);
+    } else {
+      isLastPage.value = true;
+    }
+    Future.delayed(Duration(milliseconds: 1000), () {
+      isloading.value = false;
+    });
+    update();
+    return files;
+  }
+
+  Future<void> getFollowUpData({String? id, int? page}) async {
+    final followUp = await _apiService.fetchPostedFollowUp(
+        getToken(), id.toString(), page ?? 1);
+    if (followUp.pendingFiles.isNotEmpty) {
+      postfollowUpList.value = followUp.pendingFiles;
+      currentPage.value = followUp.pagination.currentPage;
+      post_followUp_total_pages.value = followUp.pagination.totalPages;
     }
     update();
   }

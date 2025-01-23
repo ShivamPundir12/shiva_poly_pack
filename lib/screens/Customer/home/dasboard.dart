@@ -1,75 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:shiva_poly_pack/data/controller/dasboard.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
+import 'package:shiva_poly_pack/material/indicator.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
+import 'package:shiva_poly_pack/material/sign_out_dailoge.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
 import 'package:shiva_poly_pack/routes/app_routes.dart';
 import 'package:shiva_poly_pack/screens/Customer/home/notification.dart';
 
 import '../../../material/home_card.dart';
 
-class DashboardScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> cardData = [
-    {
-      'icon': 'assets/icons/order.svg',
-      'title': 'Confirmed Orders',
-      'backgroundColor': Colors.green,
-      'onTap': () => print('Confirmed Orders'),
-    },
-    {
-      'icon': 'assets/icons/ledger.svg',
-      'title': 'Ledger Report',
-      'backgroundColor': Colors.orange,
-      'onTap': () => Get.toNamed(Routes.ledger_report),
-    },
-    {
-      'icon': 'assets/icons/follow_up.svg',
-      'title': 'Request for Follow Up',
-      'backgroundColor': Colors.blue,
-      'onTap': () => print('Request for Follow Up'),
-    },
-    {
-      'icon': 'assets/icons/all_order.svg',
-      'title': 'All Orders',
-      'backgroundColor': Colors.red,
-      'onTap': () => print('All Orders'),
-    },
-    {
-      'icon': 'assets/icons/complaint.svg',
-      'title': 'Complaint',
-      'backgroundColor': Colors.redAccent,
-      'onTap': () => print('Complaint'),
-    },
-    {
-      'icon': 'assets/icons/common_package.svg',
-      'title': 'Order for Common Package',
-      'backgroundColor': Colors.teal,
-      'onTap': () => print('Order for Common Package'),
-    },
-  ];
-
-  void _showNotificationMenu() {
-    Get.dialog(
-      NotificationMenu(
-        onDisable: () {
-          print('Disable Notifications');
-          Get.back(); // Close menu
-        },
-        onAllowAll: () {
-          print('Allow All Notifications');
-          Get.back(); // Close menu
-        },
-        onFestive: () {
-          print('Only Festive Notifications');
-          Get.back(); // Close menu
-        },
-      ),
-      barrierColor: Colors.transparent, // Ensures a transparent background
-      useSafeArea: true,
-    );
-  }
-
+class DashboardScreen extends GetView<DasboardController> {
   @override
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
@@ -89,7 +32,7 @@ class DashboardScreen extends StatelessWidget {
               Icons.notifications_active,
               color: ColorPallets.white,
             ),
-            onPressed: () => _showNotificationMenu(),
+            onPressed: () => controller.showNotificationMenu(),
           ),
           IconButton(
             icon: Icon(
@@ -97,6 +40,15 @@ class DashboardScreen extends StatelessWidget {
               color: ColorPallets.white,
             ),
             onPressed: () => Get.toNamed(Routes.cus_profile),
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.logout,
+              color: ColorPallets.white,
+            ),
+            onPressed: () {
+              SignOutDialog.showSignOutDialog(context);
+            },
           ),
         ],
       ),
@@ -108,9 +60,9 @@ class DashboardScreen extends StatelessWidget {
             crossAxisSpacing: 10,
             mainAxisSpacing: 20,
           ),
-          itemCount: cardData.length,
+          itemCount: controller.cardData.length,
           itemBuilder: (context, index) {
-            final data = cardData[index];
+            final data = controller.cardData[index];
             return HomeCard(
               icon: data['icon'],
               title: data['title'],

@@ -10,6 +10,7 @@ void main() async {
   runApp(
     const MyApp(),
   );
+  GetStorage.init();
   // LocalStorageManager.clearAllData();
 }
 
@@ -23,7 +24,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    GetStorage.init();
     super.initState();
   }
 

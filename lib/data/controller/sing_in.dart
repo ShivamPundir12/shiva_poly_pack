@@ -21,12 +21,14 @@ class SingInController extends GetxController {
   RxBool isTapped = false.obs;
   ApiService _apiService = ApiService();
   late final MPinController _mPinController;
+  late final AccountTypeController _accountTypeController;
 
   @override
   void onInit() {
     super.onInit();
     WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((v) {
       _mPinController = Get.put(MPinController());
+      _accountTypeController = Get.put(AccountTypeController());
     });
   }
 
@@ -50,12 +52,14 @@ class SingInController extends GetxController {
     LoadingView.show();
     final request = await LoginRequest(
       phonenumber: contact,
-      isStaff: true,
+      isStaff: _accountTypeController.isStaff.value,
     );
     await _apiService.login(request).then((v) async {
       if (v?.token != null) {
         await LocalStorageManager.saveData('token', v?.token.toString());
-        await LocalStorageManager.saveData('userId', v?.user.id.toString());
+        await LocalStorageManager.saveData(
+            'refresh-token', v?.refreshToken.toString());
+        await LocalStorageManager.saveData('userId', v?.user?.id.toString());
         Get.offNamedUntil(Routes.otp, (route) => false);
         contactController.clear();
         LoadingView.hide();

@@ -40,7 +40,9 @@ class LocalStorageManager {
     await _box.remove('m_pin');
     await _box.remove('mobile_no');
     await _box.remove('token');
+    await _box.remove('refresh-token');
     await _box.remove('userId');
+    await _box.remove('isStaff');
   }
 
   /// Debug: Print all stored data

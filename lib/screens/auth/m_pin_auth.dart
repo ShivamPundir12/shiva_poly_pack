@@ -112,7 +112,7 @@ class CheckMpin extends GetView<MPinController> {
                 Container(
                   width: _ui.widthPercent(85),
                   child: InkWell(
-                    onTap: () => controller.confirmPin(),
+                    onTap: () => controller.refreshToken(context),
                     child: reuseable_button(
                       ui: _ui,
                       button_text: 'Sign In',

@@ -1,5 +1,7 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
+import 'package:shiva_poly_pack/screens/Customer/home/confirmDetail.dart';
+import 'package:shiva_poly_pack/screens/Customer/home/confirmOrder.dart';
 import 'package:shiva_poly_pack/screens/Customer/home/dasboard.dart';
 import 'package:shiva_poly_pack/screens/Customer/home/ledger.dart';
 import 'package:shiva_poly_pack/screens/Customer/onboardings/account_type.dart';
@@ -132,6 +134,16 @@ class AppRouter {
       page: () => QRScannerScreen(),
       transition: Transition.rightToLeft,
     ),
+    GetPage(
+      name: Routes.confirm_order,
+      page: () => ConfirmedOrdersScreen(),
+      transition: Transition.rightToLeft,
+    ),
+    // GetPage(
+    //   name: Routes.confirm_order_detail,
+    //   page: () => OrderDetailScreen(),
+    //   transition: Transition.rightToLeft,
+    // ),
   ];
 }
 
@@ -157,4 +169,6 @@ class Routes {
   static String cus_dasboard = '/Customer/home/dasboard';
   static String cus_profile = '/Customer/profile';
   static String ledger_report = '/Customer/home/ledger';
+  static String confirm_order = '/Customer/home/confm_order';
+  static String confirm_order_detail = '/Customer/home/confm_order_detail';
 }

@@ -43,11 +43,20 @@ class UploadPictureController extends GetxController {
     if (state == 'photo') {
       toggledPhoto.value = true;
       toggledScanner.value = false;
+      restartCamera();
     } else {
       toggledPhoto.value = false;
       toggledScanner.value = true;
     }
     update();
+  }
+
+  Future<void> restartCamera() async {
+    if (isCameraInitialized.value) {
+      // cameraController.dispose();
+      isCameraInitialized.value = false;
+    }
+    await initializeCamera();
   }
 
   // Initialize Camera
@@ -63,14 +72,18 @@ class UploadPictureController extends GetxController {
       );
       cameraController = CameraController(backCamera, ResolutionPreset.high);
       await cameraController.initialize();
-      if (await Permission.camera.request().isDenied) {
-        await Permission.camera.request();
-      }
+      Future.delayed(Durations.medium4).then((v) async {
+        if (await Permission.camera.request().isDenied) {
+          await Permission.camera.request();
+        }
+      });
 
       isCameraInitialized.value = true;
     } catch (e) {
       Get.snackbar('Error', 'Failed to initialize camera: $e');
     }
+
+    update();
   }
 
   Future<void> navigate({required String card_name}) async {
@@ -108,38 +121,6 @@ class UploadPictureController extends GetxController {
       await Get.toNamed(Routes.qr_scanner);
     }
   }
-
-  // Switch Camera
-  // Future<void> switchCamera() async {
-  //   try {
-  //     if (cameras.isEmpty) {
-  //       Get.snackbar('Error', 'No cameras available');
-  //       return;
-  //     }
-
-  //     isCameraInitialized.value = false; // Mark initialization as false
-  //     isCameraPreviewVisible.value = false; // Hide preview during switch
-
-  //     int currentIndex = cameras.indexWhere(
-  //       (camera) =>
-  //           camera.lensDirection ==
-  //           cameraController.value.description.lensDirection,
-  //     );
-  //     int nextIndex = (currentIndex + 1) % cameras.length;
-
-  //     final newCamera = cameras[nextIndex];
-  //     cameraController.value =
-  //         CameraController(newCamera, ResolutionPreset.high);
-
-  //     await cameraController.value.initialize();
-  //     isCameraInitialized.value = true;
-  //     isCameraPreviewVisible.value = true; // Show preview after switch
-  //   } catch (e) {
-  //     Get.snackbar('Error', 'Failed to switch camera: $e');
-  //     isCameraInitialized.value = true;
-  //     isCameraPreviewVisible.value = true;
-  //   }
-  // }
 
   // Capture Photo
   Future<void> capturePhoto(BuildContext context) async {
