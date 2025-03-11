@@ -19,6 +19,7 @@ import 'package:shiva_poly_pack/data/controller/pending_files.dart';
 import 'package:shiva_poly_pack/data/controller/preview_cntrl.dart';
 import 'package:shiva_poly_pack/data/controller/profile.dart';
 import 'package:shiva_poly_pack/data/controller/qr_controller.dart';
+import 'package:shiva_poly_pack/data/controller/requestfollowUp.dart';
 import 'package:shiva_poly_pack/data/controller/sing_in.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -50,5 +51,6 @@ class RootBinding implements Bindings {
     Get.put(ComplaintController());
     Get.put(ProfileController());
     Get.put(WebViewController());
+    Get.put(RequestfollowupController());
   }
 }

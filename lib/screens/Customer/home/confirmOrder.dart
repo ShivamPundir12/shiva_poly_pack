@@ -11,21 +11,7 @@ import 'package:shiva_poly_pack/material/styles.dart';
 import 'package:shiva_poly_pack/routes/app_routes.dart';
 import 'package:shiva_poly_pack/screens/Customer/home/confirmDetail.dart';
 
-import '../../../data/model/cus_confirmOrder.dart';
-
 class ConfirmedOrdersScreen extends GetView<ConfirmorderController> {
-  final List<Order> orders = [
-    Order(
-        id: '10001',
-        name: 'Sai Diskha Haldi Powder Roll Form',
-        date: '11-27-2024'),
-    Order(
-        id: '10002',
-        name: 'Sai Diskha Tikha Mirch 3 Side Seal',
-        date: '11-28-2024'),
-    // Add more orders here
-  ];
-
   @override
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
@@ -105,9 +91,35 @@ class ConfirmedOrdersScreen extends GetView<ConfirmorderController> {
                       itemCount: data?.data.length,
                       itemBuilder: (context, index) {
                         final order = data?.data[index];
+                        final history = order?.orderHistories.firstWhere(
+                          (element) => element.orderId == order.id,
+                          orElse: () => OrderHistory(
+                            id: 0,
+                            movein: '',
+                            duration: '',
+                            image: '',
+                            progressStage: 0,
+                            orderId: 0,
+                            stage: '',
+                          ), // Provide a default OrderHistory object
+                        );
                         return InkWell(
                           onTap: () {
-                            Get.to(() => OrderDetailScreen(orderData: order));
+                            if (history?.id == 0) {
+                              Get.snackbar(
+                                'Error',
+                                'No order history found',
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: Colors.red,
+                                colorText: ColorPallets.white,
+                              );
+                            } else {
+                              Get.to(() => OrderDetailScreen(
+                                    orderData: order,
+                                    orderHistory: history,
+                                    allOrders: false,
+                                  ));
+                            }
                           },
                           child: ProductCard(
                             pendingOrderData: order!,
@@ -118,6 +130,39 @@ class ConfirmedOrdersScreen extends GetView<ConfirmorderController> {
                   );
                 }
               }),
+          Obx(() {
+            if (controller.pendingOrderList.isNotEmpty &&
+                controller.total_pages.value > 1) {
+              // Pagination controls
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.chevron_left),
+                    onPressed: () {
+                      if (controller.currentPage.value > 1) {
+                        controller.prevPage();
+                      }
+                    },
+                  ),
+                  Obx(() => Text(controller.currentPage.value.toString() +
+                      " of " +
+                      controller.total_pages.value.toString())),
+                  IconButton(
+                    icon: Icon(Icons.chevron_right),
+                    onPressed: () {
+                      print('Length : ${controller.pendingOrderList.length}');
+                      if (!controller.isLastPage.value) {
+                        controller.nextPage();
+                      }
+                    },
+                  ),
+                ],
+              );
+            } else {
+              return SizedBox.shrink();
+            }
+          }),
         ],
       ),
     );

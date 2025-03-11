@@ -1,12 +1,10 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:shiva_poly_pack/data/controller/camera.dart';
 import 'package:shiva_poly_pack/data/injection/permission.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
-
 import '../../../material/styles.dart';
 
 class CameraScreen extends GetView<UploadPictureController> {

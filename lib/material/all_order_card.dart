@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
+import 'package:shiva_poly_pack/material/responsive.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
 
 class OrderCard extends StatelessWidget {
@@ -21,6 +22,7 @@ class OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ResponsiveUI _ui = ResponsiveUI(context);
     return Card(
       shape: Border.all(color: ColorPallets.fadegrey.withOpacity(0.2)),
       // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -34,11 +36,16 @@ class OrderCard extends StatelessWidget {
               children: [
                 Text(
                   orderId,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: Styles.getstyle(
+                      fontsize: 16, fontweight: FontWeight.bold),
                 ),
                 Text(
                   date,
-                  style: TextStyle(color: Colors.grey),
+                  style: Styles.getstyle(
+                    fontsize: 14,
+                    fontcolor: Colors.grey,
+                    fontweight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
@@ -47,22 +54,33 @@ class OrderCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(productName, style: TextStyle(fontSize: 16)),
+                Text(
+                  productName,
+                  style: Styles.getstyle(
+                    fontsize: 16,
+                    fontweight: FontWeight.w600,
+                  ),
+                ),
                 StatusBadge(status: status),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(quantity, style: TextStyle(color: Colors.grey)),
+                Text(
+                  quantity,
+                  style: Styles.getstyle(
+                      fontsize: 14, fontcolor: ColorPallets.fadegrey),
+                ),
                 TextButton(
                   onPressed: onPressed,
                   child: Text(
                     'View Detail',
                     style: Styles.getstyle(
-                        fontsize: 14,
-                        fontcolor: ColorPallets.themeColor2,
-                        fontweight: FontWeight.w500),
+                      fontsize: 14,
+                      fontcolor: ColorPallets.themeColor2,
+                      fontweight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ],
@@ -93,6 +111,15 @@ class StatusBadge extends StatelessWidget {
         badgeColor = Colors.pink;
         break;
       case 'Lamination & Poly':
+        badgeColor = Colors.lightBlue;
+        break;
+      case 'Slatting':
+        badgeColor = Colors.cyan;
+        break;
+      case 'Poach Making':
+        badgeColor = Colors.redAccent;
+        break;
+      case 'Dispatch':
         badgeColor = Colors.green;
         break;
       default:
@@ -107,7 +134,11 @@ class StatusBadge extends StatelessWidget {
       ),
       child: Text(
         status,
-        style: TextStyle(color: badgeColor),
+        style: Styles.getstyle(
+          fontsize: 14,
+          fontcolor: badgeColor,
+          fontweight: FontWeight.bold,
+        ),
       ),
     );
   }

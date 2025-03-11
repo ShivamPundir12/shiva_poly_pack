@@ -107,7 +107,7 @@ class AppRouter {
     GetPage(
       name: Routes.account_typ,
       page: () => AccountSelection(),
-      transition: Transition.rightToLeft,
+      transition: Transition.fadeIn,
     ),
     GetPage(
       name: Routes.check_m_pin,

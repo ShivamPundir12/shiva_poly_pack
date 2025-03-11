@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../material/indicator.dart';
 import '../../screens/Customer/home/notification.dart';
 import '../model/cus_pending_order.dart';
 import '../services/api_service.dart';
@@ -61,6 +62,39 @@ class AllOrderController extends GetxController {
       barrierColor: Colors.transparent, // Ensures a transparent background
       useSafeArea: true,
     );
+  }
+
+  Future<void> prevPage() async {
+    LoadingView.show();
+    await getApiData(currentPage.value - 1);
+    LoadingView.hide();
+    update();
+  }
+
+  Future<void> nextPage() async {
+    LoadingView.show();
+    await getApiData(currentPage.value + 1);
+    LoadingView.hide();
+    update();
+  }
+
+  Future<PendingOrderResponse> searchData(String searchValue) async {
+    isloading.value = true;
+    filterallOrderList.clear();
+    final files = await _apiService.fetchAllOrder(getToken(), currentPage.value,
+        searchValue: searchValue);
+    bool hasdata =
+        filterallOrderList.any((e) => files.data.any((v) => e.id == v.id));
+    if (files.data.isNotEmpty) {
+      filterallOrderList.addAllIf(!hasdata, files.data);
+    } else {
+      isLastPage.value = true;
+    }
+    Future.delayed(Duration(milliseconds: 1000), () {
+      isloading.value = false;
+    });
+    update();
+    return files;
   }
 
   Future<PendingOrderResponse> getApiData(int page) async {

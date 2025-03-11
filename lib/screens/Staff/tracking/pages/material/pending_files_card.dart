@@ -14,8 +14,9 @@ import '../../../../../material/responsive.dart';
 import '../../../../../material/styles.dart';
 
 class PendingFilesCard extends GetView<PendingFilesController> {
-  PendingFilesCard({super.key, required this.item});
+  PendingFilesCard({super.key, required this.item, required this.index});
   final PendingFile item;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +26,12 @@ class PendingFilesCard extends GetView<PendingFilesController> {
 
     return Card(
       elevation: 2,
+      color: index % 2 == 0 ? Colors.blue.shade50 : ColorPallets.white,
       child: Container(
         decoration: ShapeDecoration(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          color: ColorPallets.white,
         ),
         // height: _ui.heightPercent(17),
         width: _ui.widthPercent(90),

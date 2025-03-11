@@ -15,9 +15,6 @@ class WebViewScreen extends GetView<QRScannerController> {
   @override
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
-    final webController = Get.put(WebViewController());
-    webController.loadRequest(Uri.parse(initialUrl));
-    controller.loadUrl(initialUrl);
 
     return Scaffold(
       extendBodyBehindAppBar: true,

@@ -30,13 +30,13 @@ class AllOrders extends GetView<AllOrderController> {
               fontsize: _ui.widthPercent(6)),
         ),
         actions: [
-          IconButton(
-            icon: Icon(
-              Icons.notifications_active,
-              color: ColorPallets.white,
-            ),
-            onPressed: () => controller.showNotificationMenu(),
-          ),
+          // IconButton(
+          //   icon: Icon(
+          //     Icons.notifications_active,
+          //     color: ColorPallets.white,
+          //   ),
+          //   onPressed: () => controller.showNotificationMenu(),
+          // ),
           IconButton(
             icon: Icon(
               Icons.account_circle,
@@ -79,59 +79,128 @@ class AllOrders extends GetView<AllOrderController> {
           SizedBox(
             height: _ui.heightPercent(2),
           ),
-          FutureBuilder<PendingOrderResponse>(
-              future: controller.getApiData(1),
-              builder: (context, snapshot) {
-                final data = snapshot.data;
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: ProgressIndicatorWidget());
-                } else if (!snapshot.hasData) {
-                  return Center(
-                    child: NoDataUI(),
-                  );
-                } else {
-                  return Expanded(
-                    child: ListView.builder(
-                      itemCount: data?.data.length, // Example count
-                      itemBuilder: (context, index) {
-                        final allOrder = data?.data[index];
-                        return OrderCard(
-                          onPressed: () => Get.to(
-                            () => OrderDetailScreen(orderData: allOrder!),
-                          ),
-                          orderId: allOrder?.uniqueNumber.toString() ?? '',
-                          productName: allOrder?.jobName.toString() ?? '',
-                          quantity: 'x ${allOrder?.pcsEstimate}',
-                          date: formatDate(allOrder?.dispatchDate.toString() ??
-                              DateTime.now().toString()),
-                          status: allOrder?.stage.toString() ?? '',
-                        );
-                      },
-                    ),
-                  );
-                }
-              }),
-          // Padding(
-          //   padding: const EdgeInsets.all(8.0),
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //     children: [
-          //       IconButton(
-          //         icon: Icon(Icons.arrow_back),
-          //         onPressed: () {
-          //           // Handle previous page
-          //         },
-          //       ),
-          //       Text('1 2 ..... 99'), // Example pagination
-          //       IconButton(
-          //         icon: Icon(Icons.arrow_forward),
-          //         onPressed: () {
-          //           // Handle next page
-          //         },
-          //       ),
-          //     ],
-          //   ),
-          // ),
+          Obx(() => controller.filterallOrderList.isEmpty
+              ? FutureBuilder<PendingOrderResponse>(
+                  future: controller.getApiData(controller.currentPage.value),
+                  builder: (context, snapshot) {
+                    final data = snapshot.data;
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: ProgressIndicatorWidget());
+                    } else if (!snapshot.hasData) {
+                      return Center(
+                        child: NoDataUI(),
+                      );
+                    } else {
+                      return Expanded(
+                        child: ListView.builder(
+                          itemCount: data?.data.length, // Example count
+                          itemBuilder: (context, index) {
+                            final allOrder = data?.data[index];
+                            final orderHistory =
+                                allOrder?.orderHistories[index];
+                            return OrderCard(
+                              onPressed: () => Get.to(
+                                () => OrderDetailScreen(
+                                  orderData: allOrder!,
+                                  orderHistory: orderHistory,
+                                  allOrders: true,
+                                ),
+                              ),
+                              orderId: allOrder?.uniqueNumber.toString() ?? '',
+                              productName: allOrder?.jobName.toString() ?? '',
+                              quantity: 'x ${allOrder?.pcsEstimate} pcs',
+                              date: formatDate(
+                                  allOrder?.dispatchDate.toString() ??
+                                      DateTime.now().toString()),
+                              status: allOrder?.stage.toString() ?? '',
+                            );
+                          },
+                        ),
+                      );
+                    }
+                  })
+              : Obx(() {
+                  if (controller.isloading.value) {
+                    return Center(
+                      child: ProgressIndicatorWidget(),
+                    );
+                  } else if (controller.filterallOrderList.isEmpty) {
+                    return NoDataUI();
+                  } else {
+                    return Expanded(
+                      child: Obx(
+                        () => ListView.separated(
+                          itemCount: controller.filterallOrderList.length,
+                          separatorBuilder: (_, __) => const Divider(height: 2),
+                          itemBuilder: (context, index) {
+                            final allOrder =
+                                controller.filterallOrderList[index];
+                            return OrderCard(
+                              onPressed: () => Get.to(
+                                () => OrderDetailScreen(
+                                  orderData: allOrder,
+                                  orderHistory:
+                                      allOrder.orderHistories.firstWhere(
+                                    (element) => element.orderId == allOrder.id,
+                                    orElse: () => OrderHistory(
+                                      id: 0,
+                                      movein: '',
+                                      duration: '',
+                                      image: '',
+                                      progressStage: 0,
+                                      orderId: 0,
+                                      stage: '',
+                                    ),
+                                  ),
+                                  allOrders: true,
+                                ),
+                              ),
+                              orderId: allOrder.uniqueNumber.toString(),
+                              productName: allOrder.jobName.toString(),
+                              quantity: 'x ${allOrder.pcsEstimate} pcs',
+                              date:
+                                  formatDate(allOrder.dispatchDate.toString()),
+                              status: allOrder.stage.toString(),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  }
+                })),
+          Obx(() {
+            if (controller.allOrderList.isNotEmpty &&
+                controller.total_pages.value > 1) {
+              // Pagination controls
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.chevron_left),
+                    onPressed: () {
+                      if (controller.currentPage.value > 1) {
+                        controller.prevPage();
+                      }
+                    },
+                  ),
+                  Obx(() => Text(controller.currentPage.value.toString() +
+                      " of " +
+                      controller.total_pages.value.toString())),
+                  IconButton(
+                    icon: Icon(Icons.chevron_right),
+                    onPressed: () {
+                      print('Length : ${controller.allOrderList.length}');
+                      if (!controller.isLastPage.value) {
+                        controller.nextPage();
+                      }
+                    },
+                  ),
+                ],
+              );
+            } else {
+              return SizedBox.shrink();
+            }
+          }),
         ],
       ),
     );
@@ -150,9 +219,9 @@ class AllOrders extends GetView<AllOrderController> {
           child: TextField(
             onChanged: (value) {
               if (value.isNotEmpty) {
-                // controller.searchData(value);
+                controller.searchData(value);
               } else {
-                // controller.filterpendingFilesList.clear();
+                controller.filterallOrderList.clear();
               }
             },
             decoration: InputDecoration(

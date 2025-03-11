@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -8,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shiva_poly_pack/data/controller/local_storage.dart';
 import 'package:shiva_poly_pack/data/controller/new_leads.dart';
+import 'package:shiva_poly_pack/data/controller/sing_in.dart';
 import 'package:shiva_poly_pack/data/injection/permission.dart';
 import 'package:shiva_poly_pack/data/model/tacker.dart';
 import 'package:shiva_poly_pack/data/services/api_service.dart';
@@ -27,6 +29,7 @@ class UploadPictureController extends GetxController {
   RxBool toggledScanner = false.obs;
   RxDouble longitude = 0.0.obs;
   RxBool isCameraPreviewVisible = true.obs;
+  RxBool showQr = false.obs;
   final String storageKey = 'photo_metadata';
   Rx<PhotoMetadata> metadata =
       PhotoMetadata(useerId: '', latitude: 0, longitude: 0, locationName: '')
@@ -37,6 +40,16 @@ class UploadPictureController extends GetxController {
   void onInit() {
     super.onInit();
     initializeCamera();
+  }
+
+  Future<void> setShowQr() async {
+    final showqr = await LocalStorageManager.readData('showQr');
+    if (showqr == 'true') {
+      showQr.value = true;
+    } else {
+      showQr.value = false;
+    }
+    update();
   }
 
   Future<void> toggleState(String state) async {
@@ -64,7 +77,6 @@ class UploadPictureController extends GetxController {
     try {
       // Get all available cameras
       final cameras = await availableCameras();
-
       // Filter to find the back camera
       final backCamera = cameras.firstWhere(
         (camera) => camera.lensDirection == CameraLensDirection.back,
@@ -76,6 +88,7 @@ class UploadPictureController extends GetxController {
         if (await Permission.camera.request().isDenied) {
           await Permission.camera.request();
         }
+        requestStoragePermission();
       });
 
       isCameraInitialized.value = true;
@@ -84,6 +97,12 @@ class UploadPictureController extends GetxController {
     }
 
     update();
+  }
+
+  Future<void> requestStoragePermission() async {
+    if (await Permission.storage.request().isDenied) {
+      await Permission.storage.request();
+    }
   }
 
   Future<void> navigate({required String card_name}) async {

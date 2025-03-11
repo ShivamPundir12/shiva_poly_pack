@@ -8,10 +8,12 @@ class reuseable_button extends StatelessWidget {
   reuseable_button({
     super.key,
     required ResponsiveUI ui,
+    this.isDisabled,
     required this.button_text,
   }) : _ui = ui;
 
   final ResponsiveUI _ui;
+  final bool? isDisabled;
   final String button_text;
 
   @override
@@ -20,7 +22,9 @@ class reuseable_button extends StatelessWidget {
       alignment: Alignment.center,
       height: _ui.heightPercent(7.5),
       decoration: ShapeDecoration(
-        color: ColorPallets.themeColor,
+        color: isDisabled == true
+            ? ColorPallets.fadegrey2
+            : ColorPallets.themeColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shiva_poly_pack/data/controller/profile.dart';
 import 'package:shiva_poly_pack/screens/Customer/home/all_order.dart';
 import 'package:shiva_poly_pack/screens/Customer/home/complaint.dart';
 import 'package:shiva_poly_pack/screens/Customer/home/requestFollowUp.dart';
@@ -8,6 +9,7 @@ import '../../routes/app_routes.dart';
 import '../../screens/Customer/home/notification.dart';
 
 class DasboardController extends GetxController {
+  final ProfileController _profileController = Get.put(ProfileController());
   final RxList<Map<String, dynamic>> cardData = [
     {
       'icon': 'assets/icons/order.svg',
@@ -23,7 +25,7 @@ class DasboardController extends GetxController {
     },
     {
       'icon': 'assets/icons/follow_up.svg',
-      'title': 'Request for Follow Up',
+      'title': 'Request Follow Up',
       'backgroundColor': Colors.blue,
       'onTap': () => Get.to(() => ContactScreen()),
     },
@@ -46,6 +48,10 @@ class DasboardController extends GetxController {
     //   'onTap': () => print('Order for Common Package'),
     // },
   ].obs;
+
+  void goToProfile() {
+    _profileController.fetchProfile();
+  }
 
   void showNotificationMenu() {
     Get.dialog(

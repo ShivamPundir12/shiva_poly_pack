@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:shiva_poly_pack/data/controller/confirmOrder.dart';
 import 'package:shiva_poly_pack/data/model/cus_pending_order.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
+import 'package:shiva_poly_pack/material/indicator.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
 
@@ -19,6 +21,11 @@ class ProductCard extends GetView<ConfirmorderController> {
       padding: EdgeInsets.symmetric(
           horizontal: _ui.widthPercent(1.2), vertical: _ui.heightPercent(0.4)),
       child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(color: Colors.grey.shade400),
+        ),
+        elevation: 2,
         child: Container(
           padding: EdgeInsets.all(_ui.heightPercent(0.8)),
           decoration: BoxDecoration(
@@ -62,18 +69,23 @@ class ProductCard extends GetView<ConfirmorderController> {
                   // Product Image
                   Container(
                     width: _ui.widthPercent(20),
-                    height: _ui.heightPercent(11),
+                    height: _ui.heightPercent(14),
                     decoration: BoxDecoration(
                       color: Colors.blue[50],
                       borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey[200]!),
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        controller.baseUrl +
+                      child: CachedNetworkImage(
+                        imageUrl: controller.baseUrl +
                             '/' +
                             pendingOrderData.orderPic.toString(),
                         fit: BoxFit.cover,
+                        placeholder: (context, url) => Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ProgressIndicatorWidget(),
+                        ),
                       ),
                     ),
                   ),
@@ -83,11 +95,15 @@ class ProductCard extends GetView<ConfirmorderController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          pendingOrderData.jobName.toString(),
-                          style: TextStyle(
-                            fontSize: _ui.widthPercent(4),
-                            fontWeight: FontWeight.w400,
+                        Container(
+                          width: _ui.widthPercent(46),
+                          child: Text(
+                            pendingOrderData.jobName.toString(),
+                            softWrap: true,
+                            style: TextStyle(
+                              fontSize: _ui.widthPercent(4),
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                         SizedBox(height: 4),
@@ -96,21 +112,22 @@ class ProductCard extends GetView<ConfirmorderController> {
                                 fontsize: _ui.widthPercent(4),
                                 fontweight: FontWeight.bold,
                                 fontcolor: ColorPallets.themeColor)),
+                        SizedBox(height: 4),
+                        Text(
+                          pendingOrderData.stage.toString(),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         SizedBox(height: 16),
                         Container(
                           height: 40,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                pendingOrderData.stage.toString(),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
                               Container(
-                                width: _ui.widthPercent(42),
+                                width: _ui.widthPercent(62),
                                 child: SliderTheme(
                                   data: SliderThemeData(
                                     activeTrackColor: ColorPallets.themeColor2,
@@ -131,12 +148,15 @@ class ProductCard extends GetView<ConfirmorderController> {
                                         .stageNumber
                                         .toString()),
                                     min: 0,
-                                    max: 5,
-                                    divisions: 5,
+                                    max: 6,
+                                    divisions: 6,
                                     onChanged: (value) {
-                                      controller.sliderProgress(double.parse(
+                                      controller.sliderProgress(
+                                        double.parse(
                                           pendingOrderData.stageNumber
-                                              .toString()));
+                                              .toString(),
+                                        ),
+                                      );
                                     },
                                   ),
                                 ),

@@ -20,7 +20,7 @@ class QRScannerScreen extends GetView<QRScannerController> {
                   if (controller.isInitilizing.value) {
                     return Center(
                       child:
-                          CircularProgressIndicator(), // Show loading indicator
+                          CircularProgressIndicator(), 
                     );
                   }
                   return AiBarcodeScanner(

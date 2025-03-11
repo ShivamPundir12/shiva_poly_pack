@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
@@ -21,9 +22,9 @@ class AccountCard extends StatelessWidget {
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: _ui.widthPercent(2)),
+      margin: EdgeInsets.symmetric(horizontal: _ui.widthPercent(4)),
       padding: EdgeInsets.symmetric(
-          vertical: _ui.heightPercent(3), horizontal: _ui.widthPercent(2)),
+          vertical: _ui.heightPercent(3), horizontal: _ui.widthPercent(1)),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
@@ -34,41 +35,55 @@ class AccountCard extends StatelessWidget {
             ? ColorPallets.themeColor.withOpacity(0.1)
             : ColorPallets.white,
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Stack(
+        fit: StackFit.loose,
+        alignment: Alignment.topRight,
         children: [
-          Image.asset(
-            image,
-            scale: _ui.widthPercent(6),
-          ),
-          SizedBox(width: _ui.widthPercent(2)),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: Styles.getstyle(
-                  fontsize: _ui.widthPercent(4),
-                  fontweight: FontWeight.bold,
+              SizedBox(
+                height: _ui.heightPercent(10.5),
+                width: _ui.heightPercent(14),
+                child: SvgPicture.asset(
+                  image,
+                  fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(height: 4),
-              SizedBox(
-                width: _ui.widthPercent(55),
-                child: Text(
-                  description,
-                  style: Styles.getstyle(
-                    fontsize: _ui.widthPercent(3.3),
-                    fontweight: FontWeight.w500,
+              SizedBox(width: _ui.widthPercent(2)),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Styles.getstyle(
+                      fontsize: _ui.widthPercent(4),
+                      fontweight: FontWeight.bold,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 4),
+                  SizedBox(
+                    width: _ui.widthPercent(55),
+                    child: Text(
+                      description,
+                      style: Styles.getstyle(
+                        fontsize: _ui.widthPercent(3.3),
+                        fontweight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
           if (isSelected)
-            Icon(
-              Icons.check_circle,
-              color: ColorPallets.themeColor,
+            Padding(
+              padding: EdgeInsets.only(right: _ui.widthPercent(4)),
+              child: Icon(
+                Icons.check_circle,
+                color: ColorPallets.themeColor,
+              ),
             ),
         ],
       ),

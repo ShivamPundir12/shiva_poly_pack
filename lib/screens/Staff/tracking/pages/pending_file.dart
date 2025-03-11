@@ -92,7 +92,10 @@ class PendingFile extends GetView<PendingFilesController> {
                                 return Padding(
                                   padding: EdgeInsets.only(
                                       bottom: _ui.heightPercent(0.4)),
-                                  child: PendingFilesCard(item: item),
+                                  child: PendingFilesCard(
+                                    item: item,
+                                    index: index,
+                                  ),
                                 );
                               },
                             ),
@@ -120,7 +123,10 @@ class PendingFile extends GetView<PendingFilesController> {
                                 return Padding(
                                   padding: EdgeInsets.only(
                                       bottom: _ui.heightPercent(0.4)),
-                                  child: PendingFilesCard(item: item),
+                                  child: PendingFilesCard(
+                                    item: item,
+                                    index: index,
+                                  ),
                                 );
                               },
                             ),

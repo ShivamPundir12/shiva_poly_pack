@@ -5,6 +5,8 @@ import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
 import 'package:shiva_poly_pack/routes/app_routes.dart';
+import 'package:shiva_poly_pack/screens/Customer/onboardings/account_type.dart';
+import 'package:shiva_poly_pack/screens/auth/sing_in.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -88,7 +90,11 @@ class WelcomeScreen extends StatelessWidget {
                       height: _ui.heightPercent(12),
                       alignment: Alignment.bottomLeft,
                       child: InkWell(
-                        onTap: () => Get.toNamed(Routes.account_typ),
+                        onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AccountSelection(),
+                            )),
                         child: Chip(
                           backgroundColor: ColorPallets.themeColor,
                           labelPadding: EdgeInsets.symmetric(

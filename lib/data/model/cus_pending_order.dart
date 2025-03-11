@@ -1,8 +1,9 @@
 class PendingOrderResponse {
   String message;
   List<PendingOrderData> data;
-  // Pagination pagination;
-  PendingOrderResponse({required this.message, required this.data});
+  Pagination pagination;
+  PendingOrderResponse(
+      {required this.message, required this.data, required this.pagination});
 
   factory PendingOrderResponse.fromJson(Map<String, dynamic> json) {
     return PendingOrderResponse(
@@ -12,7 +13,7 @@ class PendingOrderResponse {
               .map((item) => PendingOrderData.fromJson(item))
               .toList()
           : [],
-      // pagination: Pagination.fromJson(json['pagination']),
+      pagination: Pagination.fromJson(json['pagination']),
     );
   }
 
@@ -90,7 +91,7 @@ class PendingOrderData {
   dynamic isMetalPurchased;
   String? userId;
   String? stage;
-  List<dynamic>? orderHistories;
+  List<OrderHistory> orderHistories;
 
   PendingOrderData({
     this.id,
@@ -134,7 +135,7 @@ class PendingOrderData {
     this.isMetalPurchased,
     this.userId,
     this.stage,
-    this.orderHistories,
+    required this.orderHistories,
     this.stageNumber,
   });
 
@@ -186,7 +187,9 @@ class PendingOrderData {
       isMetalPurchased: json['isMetalPurchased'],
       userId: json['userId'],
       stage: json['stage'],
-      orderHistories: json['orderHistories'] ?? [],
+      orderHistories: (json['orderHistories'] as List)
+          .map((item) => OrderHistory.fromJson(item))
+          .toList(),
     );
   }
 
@@ -234,6 +237,50 @@ class PendingOrderData {
       'userId': userId,
       'stage': stage,
       'orderHistories': orderHistories,
+    };
+  }
+}
+
+class OrderHistory {
+  final int id;
+  final String movein;
+  final String duration;
+  final String image;
+  final int progressStage;
+  final int orderId;
+  final String stage;
+
+  OrderHistory({
+    required this.id,
+    required this.movein,
+    required this.duration,
+    required this.image,
+    required this.progressStage,
+    required this.orderId,
+    required this.stage,
+  });
+
+  factory OrderHistory.fromJson(Map<String, dynamic> json) {
+    return OrderHistory(
+      id: json['id'] as int,
+      movein: json['movein'] as String,
+      duration: json['duration'] as String,
+      image: json['image'] as String,
+      progressStage: json['progressStage'] as int,
+      orderId: json['orderId'] as int,
+      stage: json['stage'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'movein': movein,
+      'duration': duration,
+      'image': image,
+      'progressStage': progressStage,
+      'orderId': orderId,
+      'stage': stage,
     };
   }
 }

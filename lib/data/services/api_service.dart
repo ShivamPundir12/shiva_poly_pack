@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart';
 import 'package:shiva_poly_pack/data/controller/local_storage.dart';
+import 'package:shiva_poly_pack/data/model/complaint.dart';
 import 'package:shiva_poly_pack/data/model/crm_list.dart';
 import 'package:shiva_poly_pack/data/model/cus_pending_order.dart';
 import 'package:shiva_poly_pack/data/model/final_customer.dart';
@@ -59,6 +60,10 @@ class ApiService {
       "/api/Customer/CreateComplaint";
   static const String _editCustomerProfile =
       "/api/Customer/UpdateCustomerProfile";
+  static const String _contactUsEndpoint =
+      "/api/Customer/CustomerRequestedForCall?CustomerName=";
+  static const String _getorderNoEndpoint =
+      "/api/Customer/GetOrderByCustomerId?CrmId=";
 
   // Login method
   Future<LoginResponse?> login(LoginRequest request) async {
@@ -672,7 +677,10 @@ class ApiService {
   Future<LedgerModel> fetchLedgerdata(String token, int pageNumber,
       {String? searchValue}) async {
     final url = searchValue != null
-        ? Uri.parse(_baseUrl + _customerLedgerReport)
+        ? Uri.parse(_baseUrl +
+            _customerLedgerReport +
+            LocalStorageManager.getUserId() +
+            '&pageNumber=$pageNumber&pageSize=11&SearchQuery=$searchValue')
         : Uri.parse(_baseUrl +
             _customerLedgerReport +
             LocalStorageManager.getUserId() +
@@ -735,12 +743,14 @@ class ApiService {
   Future<PendingOrderResponse> fetchAllOrder(String token, int pageNumber,
       {String? searchValue}) async {
     final url = searchValue != null
-        ? Uri.parse(_baseUrl + _customerAllOrder)
-        : Uri.parse(
-            _baseUrl + _customerAllOrder + LocalStorageManager.getUserId()
-            // +
-            // '&pageNumber=$pageNumber&pageSize=11'
-            );
+        ? Uri.parse(_baseUrl +
+            _customerAllOrder +
+            LocalStorageManager.getUserId() +
+            '&pageNumber=$pageNumber&pageSize=11&SearchQuery=$searchValue')
+        : Uri.parse(_baseUrl +
+            _customerAllOrder +
+            LocalStorageManager.getUserId() +
+            '&pageNumber=$pageNumber&pageSize=11');
 
     try {
       final response = await http.get(
@@ -832,7 +842,7 @@ class ApiService {
         'Content-Type': 'multipart/form-data',
       });
 
-      request.fields['OrderNo'] = orderNo.toString();
+      request.fields['OrderId'] = orderNo.toString();
       request.fields['Complaintreason'] = complaintReason;
       request.fields['Message'] = message;
       request.fields['CrmId'] = crmId.toString();
@@ -861,6 +871,70 @@ class ApiService {
     } catch (e) {
       print('Error: $e');
       throw Exception("Error occurred while submitting complaint: $e");
+    }
+  }
+
+  Future<dynamic> contactUs(
+      {required String token,
+      required String customerName,
+      required String phoneNumber}) async {
+    try {
+      final url = Uri.parse(_baseUrl +
+          _contactUsEndpoint +
+          customerName +
+          '&PhoneNumber=$phoneNumber');
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        print('Data: $jsonData');
+        return response.statusCode;
+      } else {
+        final jsonData = json.decode(response.body);
+        String message = jsonData['message'];
+        Get.snackbar('Error', message + '\n' + 'Try again later!',
+            colorText: Colors.black);
+        throw Exception(
+            "Failed to submit complaint. Status Code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('Error: $e');
+      throw Exception("Error occurred while submitting complaint: $e");
+    }
+  }
+
+  Future<OrderModelResponse> getOrderNo() async {
+    final url = Uri.parse(
+        _baseUrl + _getorderNoEndpoint + LocalStorageManager.getUserId());
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer ${getToken()}',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsondata = json.decode(response.body);
+        print('Data: $jsondata');
+        return OrderModelResponse.fromJson(jsondata);
+      } else {
+        // Handle errors
+        throw Exception(
+            "Failed to load leads. Status Code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('Error : $e');
+      // Handle exceptions
+      throw Exception("Error occurred while fetching leads: $e");
     }
   }
 }

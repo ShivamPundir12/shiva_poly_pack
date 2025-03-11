@@ -35,7 +35,7 @@ class ContactOption extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 40, color: ColorPallets.themeColor2),
+            Icon(icon, size: 40, color: Colors.green),
             SizedBox(height: 12),
             Text(
               label,

@@ -20,7 +20,7 @@ class MPinController extends GetxController {
   ApiService _apiService = ApiService();
 
   Future<void> get_Pin() async {
-    if (mpinFormKey.value.currentState!.validate()) {
+    if (mpinFormKey.value.currentState!.validate() && m_pin.text.length == 4) {
       LoadingView.show();
       Future.delayed(Durations.medium3).then((v) async {
         await LocalStorageManager.saveData('m_pin', m_pin.text);
@@ -31,6 +31,13 @@ class MPinController extends GetxController {
           Get.offNamed(Routes.cus_dasboard, preventDuplicates: true);
         }
       });
+    } else if (m_pin.text.length.isLowerThan(4)) {
+      Get.snackbar(
+        'Info',
+        'MPIN length should be 4 digit!',
+        colorText: ColorPallets.white,
+        backgroundColor: ColorPallets.themeColor2,
+      );
     }
   }
 

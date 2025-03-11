@@ -41,6 +41,7 @@ class LoginResponse {
   final String message;
   final User? user;
   final String token;
+  final UserRightResponse userRights;
   final String refreshToken;
 
   LoginResponse({
@@ -48,6 +49,7 @@ class LoginResponse {
     required this.user,
     required this.token,
     required this.refreshToken,
+    required this.userRights,
   });
 
   // Create an object from JSON response
@@ -57,6 +59,19 @@ class LoginResponse {
       user: json['user'] != null ? User.fromJson(json['user']) : null,
       token: json['accessToken'] ?? '',
       refreshToken: json['refreshToken'] ?? '',
+      userRights: UserRightResponse.fromJson(json['userRights'] ?? {}),
+    );
+  }
+}
+
+class UserRightResponse {
+  final bool barcodeScanner;
+
+  UserRightResponse({required this.barcodeScanner});
+
+  factory UserRightResponse.fromJson(Map<String, dynamic> json) {
+    return UserRightResponse(
+      barcodeScanner: json['barcodeScanner'] ?? false,
     );
   }
 }

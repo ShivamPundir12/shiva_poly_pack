@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:shiva_poly_pack/data/model/cus_pending_order.dart';
 import 'package:shiva_poly_pack/data/services/api_service.dart';
 
+import '../../material/indicator.dart';
+
 class ConfirmorderController extends GetxController {
   ApiService _apiService = ApiService();
   RxBool isloading = true.obs;
@@ -47,6 +49,20 @@ class ConfirmorderController extends GetxController {
     return date.value;
   }
 
+  Future<void> prevPage() async {
+    LoadingView.show();
+    await getApiData(currentPage.value - 1);
+    LoadingView.hide();
+    update();
+  }
+
+  Future<void> nextPage() async {
+    LoadingView.show();
+    await getApiData(currentPage.value + 1);
+    LoadingView.hide();
+    update();
+  }
+
   Future<PendingOrderResponse> getApiData(int page) async {
     final files = await _apiService.fetchPendingOrders(
       getToken(),
@@ -61,8 +77,8 @@ class ConfirmorderController extends GetxController {
         pendingOrderList.addAllIf(!hasdata, files.data);
       }
       currentPage.value = page;
-      // isLastPage.value = currentPage >= files.pagination.totalPages;
-      // total_pages.value = files.pagination.totalPages;
+      isLastPage.value = currentPage >= files.pagination.totalPages;
+      total_pages.value = files.pagination.totalPages;
     } else {
       isLastPage.value = true;
     }

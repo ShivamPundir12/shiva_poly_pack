@@ -17,16 +17,19 @@ class NewLeadsCard extends StatelessWidget {
     required this.item,
     this.onTap,
     required this.isExpanded,
+    required this.index,
   });
   final Lead? item;
   final Function()? onTap;
   final bool isExpanded;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
 
     return Card(
+      color: index % 2 == 0 ? Colors.blue.shade50 : ColorPallets.white,
       elevation: 2,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 700),
@@ -35,7 +38,6 @@ class NewLeadsCard extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          color: ColorPallets.white,
         ),
         width: _ui.widthPercent(90),
         child: SingleChildScrollView(

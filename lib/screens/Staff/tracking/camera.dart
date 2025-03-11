@@ -11,6 +11,7 @@ import 'package:shiva_poly_pack/material/sign_out_dailoge.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
 
 import '../../../material/custom_card.dart';
+import '../../../routes/app_routes.dart';
 
 class UploadPictureScreen extends GetView<UploadPictureController> {
   final List<Map<String, dynamic>> menuItems = [
@@ -36,7 +37,7 @@ class UploadPictureScreen extends GetView<UploadPictureController> {
   @override
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
-
+    controller.setShowQr();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -64,20 +65,24 @@ class UploadPictureScreen extends GetView<UploadPictureController> {
         height: _ui.heightPercent(12),
         width: _ui.widthPercent(15),
         margin: EdgeInsets.only(top: _ui.heightPercent(3.9)),
-        child: FloatingActionButton(
-          shape: CircleBorder(),
-          backgroundColor: ColorPallets.themeColor2,
-          tooltip: 'Camera',
-          onPressed: () => controller.navigationSet(),
-          child: Obx(
-            () => Icon(
-              controller.toggledPhoto.value
-                  ? CupertinoIcons.camera
-                  : CupertinoIcons.qrcode,
-              color: ColorPallets.white,
-              size: controller.toggledPhoto.value
-                  ? _ui.heightPercent(4)
-                  : _ui.heightPercent(4.5),
+        child: Obx(
+          () => FloatingActionButton(
+            shape: CircleBorder(),
+            backgroundColor: ColorPallets.themeColor2,
+            tooltip: 'Camera',
+            onPressed: controller.showQr.value
+                ? () => controller.navigationSet()
+                : () => Get.toNamed(Routes.camera_screen),
+            child: Obx(
+              () => Icon(
+                controller.toggledPhoto.value
+                    ? CupertinoIcons.camera
+                    : CupertinoIcons.qrcode,
+                color: ColorPallets.white,
+                size: controller.toggledPhoto.value
+                    ? _ui.heightPercent(4)
+                    : _ui.heightPercent(4.5),
+              ),
             ),
           ),
         ),
@@ -85,52 +90,56 @@ class UploadPictureScreen extends GetView<UploadPictureController> {
       bottomNavigationBar: BottomAppBar(
         color: ColorPallets.themeColor2,
         shape: CurvedNotchedRectangle(),
-        child: Container(
-          margin: EdgeInsets.symmetric(
-            horizontal: _ui.widthPercent(5),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              GestureDetector(
-                onTap: () => controller.toggleState('photo'),
-                child: Obx(
-                  () => Text(
-                    'Take Photo',
-                    style: Styles.getstyle(
-                      fontcolor: controller.toggledPhoto.value
-                          ? ColorPallets.white
-                          : Colors.black.withOpacity(0.4),
-                      fontweight: controller.toggledPhoto.value
-                          ? FontWeight.bold
-                          : FontWeight.w300,
-                      fontsize: controller.toggledPhoto.value
-                          ? _ui.widthPercent(5)
-                          : _ui.widthPercent(4.5),
-                    ),
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () => controller.toggleState('scanner'),
-                child: Obx(
-                  () => Text(
-                    'Scan QR',
-                    style: Styles.getstyle(
-                      fontcolor: controller.toggledPhoto.value
-                          ? Colors.black.withOpacity(0.4)
-                          : ColorPallets.white,
-                      fontweight: controller.toggledPhoto.value
-                          ? FontWeight.w300
-                          : FontWeight.bold,
-                      fontsize: controller.toggledPhoto.value
-                          ? _ui.widthPercent(4.5)
-                          : _ui.widthPercent(5),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+        child: Obx(
+          () => Container(
+            margin: EdgeInsets.symmetric(
+              horizontal: _ui.widthPercent(5),
+            ),
+            child: controller.showQr.value
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () => controller.toggleState('photo'),
+                        child: Obx(
+                          () => Text(
+                            'Take Photo',
+                            style: Styles.getstyle(
+                              fontcolor: controller.toggledPhoto.value
+                                  ? ColorPallets.white
+                                  : Colors.black.withOpacity(0.4),
+                              fontweight: controller.toggledPhoto.value
+                                  ? FontWeight.bold
+                                  : FontWeight.w300,
+                              fontsize: controller.toggledPhoto.value
+                                  ? _ui.widthPercent(5)
+                                  : _ui.widthPercent(4.5),
+                            ),
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => controller.toggleState('scanner'),
+                        child: Obx(
+                          () => Text(
+                            'Scan QR',
+                            style: Styles.getstyle(
+                              fontcolor: controller.toggledPhoto.value
+                                  ? Colors.black.withOpacity(0.4)
+                                  : ColorPallets.white,
+                              fontweight: controller.toggledPhoto.value
+                                  ? FontWeight.w300
+                                  : FontWeight.bold,
+                              fontsize: controller.toggledPhoto.value
+                                  ? _ui.widthPercent(4.5)
+                                  : _ui.widthPercent(5),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Container(),
           ),
         ),
         notchMargin: 18.0,

@@ -60,8 +60,8 @@ class ProfileController extends GetxController {
   }
 
   Future<void> updateProfile() async {
-    LoadingView.show();
     if (fromkey.currentState!.validate()) {
+      LoadingView.show();
       final data = await _apiService.editProfile(
         token: getToken(),
         profile: local_image.isNotEmpty ? File(local_image.value) : null,
@@ -88,14 +88,5 @@ class ProfileController extends GetxController {
     } else {
       Get.snackbar('Error', 'No image selected');
     }
-  }
-
-  // Function to check if any data has changed
-  bool _isDataChanged() {
-    return username.text != initialUsername ||
-        phoneNo.text != initialPhoneNo ||
-        alternatePhoneno.text != initialAlternatePhoneno ||
-        location.text != initialLocation ||
-        local_image.value != initialImage;
   }
 }

@@ -13,8 +13,14 @@ import '../../../../../material/responsive.dart';
 import '../../../../../material/styles.dart';
 
 class FollowUpCard extends GetView<FollowUp> {
-  FollowUpCard({super.key, required this.item, this.onTap, this.eyeonTap});
+  FollowUpCard(
+      {super.key,
+      required this.item,
+      this.onTap,
+      this.eyeonTap,
+      required this.index});
   final FollowupModel item;
+  final int index;
   final Function()? onTap;
   final Function()? eyeonTap;
 
@@ -24,12 +30,12 @@ class FollowUpCard extends GetView<FollowUp> {
 
     return Card(
       elevation: 2,
+      color: index % 2 == 0 ? Colors.blue.shade50 : ColorPallets.white,
       child: Container(
         decoration: ShapeDecoration(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          color: ColorPallets.white,
         ),
         // height: _ui.heightPercent(17),
         width: _ui.widthPercent(90),

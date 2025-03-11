@@ -10,6 +10,7 @@ import 'package:shiva_poly_pack/data/model/ledger.dart';
 import 'package:shiva_poly_pack/data/services/validation.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/indicator.dart';
+import 'package:shiva_poly_pack/material/ledger_card.dart';
 import 'package:shiva_poly_pack/material/no_data.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 import 'package:shiva_poly_pack/material/styles.dart';
@@ -21,6 +22,7 @@ class LedgerReportScreen extends GetView<LedgerReportController> {
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: ColorPallets.themeColor,
@@ -32,13 +34,13 @@ class LedgerReportScreen extends GetView<LedgerReportController> {
               fontsize: _ui.widthPercent(6)),
         ),
         actions: [
-          IconButton(
-            icon: Icon(
-              Icons.notifications_active,
-              color: ColorPallets.white,
-            ),
-            onPressed: () => controller.showNotificationMenu(),
-          ),
+          // IconButton(
+          //   icon: Icon(
+          //     Icons.notifications_active,
+          //     color: ColorPallets.white,
+          //   ),
+          //   onPressed: () => controller.showNotificationMenu(),
+          // ),
           IconButton(
             icon: Icon(
               Icons.account_circle,
@@ -58,6 +60,10 @@ class LedgerReportScreen extends GetView<LedgerReportController> {
                   child: IconButton(
                       onPressed: () {
                         Get.back();
+                        if (controller.filterledgerDatalist.isNotEmpty) {
+                          controller.filterledgerDatalist.clear();
+                        }
+                        controller.selectedOption.value = 'A-Z';
                       },
                       icon: Icon(
                         Icons.arrow_back,
@@ -130,145 +136,110 @@ class LedgerReportScreen extends GetView<LedgerReportController> {
             ),
           ),
           // Ledger Report List
-          FutureBuilder<LedgerModel>(
-              future: controller.getApiData(1),
-              builder: (context, snapshot) {
-                final data = snapshot.data;
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: ProgressIndicatorWidget(),
-                  );
-                } else if (!snapshot.hasData) {
-                  return NoDataUI();
-                } else {
-                  return Expanded(
-                    child: ListView.separated(
-                      itemCount: controller.ledgerDatalist.length,
-                      separatorBuilder: (_, __) => const Divider(height: 1),
-                      itemBuilder: (context, index) {
-                        final item = data?.data[index];
-                        return Obx(() {
-                          final isExpanded =
-                              controller.expandedIndex.value == index;
-                          return Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: _ui.widthPercent(2)),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(22),
-                              child: Card(
-                                child: Column(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () =>
-                                          controller.toggleExpand(index),
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 12, horizontal: 8),
-                                        color: index.isEven
-                                            ? Colors.grey[300]
-                                            : ColorPallets.white,
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                item?.orderId.toString() ?? '0',
-                                                style: Styles.getstyle(
-                                                    fontsize:
-                                                        _ui.widthPercent(3),
-                                                    fontweight:
-                                                        FontWeight.w500),
-                                              ),
-                                            ),
-                                            Container(
-                                              width: _ui.widthPercent(60),
-                                              child: Text(
-                                                item?.ledger.toString() ?? '',
-                                                style: Styles.getstyle(
-                                                    fontsize:
-                                                        _ui.widthPercent(3),
-                                                    fontweight:
-                                                        FontWeight.w700),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                formatDate(item?.createdDate
-                                                        .toString() ??
-                                                    ''),
-                                                textAlign: TextAlign.right,
-                                                style: Styles.getstyle(
-                                                    fontsize:
-                                                        _ui.widthPercent(3),
-                                                    fontweight:
-                                                        FontWeight.w500),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: _ui.widthPercent(4),
-                                            ),
-                                            isExpanded
-                                                ? Transform.rotate(
-                                                    angle: pi / 2,
-                                                    child: SvgPicture.asset(
-                                                      'assets/icons/list.svg',
-                                                      height: _ui
-                                                          .heightPercent(1.6),
-                                                      width:
-                                                          _ui.widthPercent(1.6),
-                                                    ),
-                                                  )
-                                                : SvgPicture.asset(
-                                                    'assets/icons/list.svg',
-                                                    height:
-                                                        _ui.heightPercent(1.6),
-                                                    width:
-                                                        _ui.widthPercent(1.6),
-                                                  ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    // Expanded content
-                                    if (isExpanded)
-                                      Container(
-                                        padding: const EdgeInsets.all(8),
-                                        color: Colors.grey[100],
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: ElevatedButton(
-                                                onPressed: () {
-                                                  // Request Invoice Logic
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      ColorPallets.themeColor2,
-                                                ),
-                                                child: Text(
-                                                  "Request for the Invoice",
-                                                  style: Styles.getstyle(
-                                                      fontweight:
-                                                          FontWeight.bold,
-                                                      fontcolor:
-                                                          ColorPallets.white,
-                                                      fontsize: 14),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        });
-                      },
-                    ),
-                  );
-                }
-              }),
+          Obx(() => controller.filterledgerDatalist.isEmpty
+              ? FutureBuilder<LedgerModel>(
+                  future: controller.getApiData(controller.currentPage.value),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: ProgressIndicatorWidget(),
+                      );
+                    } else if (!snapshot.hasData) {
+                      return NoDataUI();
+                    } else {
+                      return Expanded(
+                        child: Obx(
+                          () => ListView.separated(
+                            shrinkWrap: true,
+                            itemCount: controller.ledgerDatalist.length,
+                            separatorBuilder: (_, __) =>
+                                Divider(height: _ui.heightPercent(2.5)),
+                            itemBuilder: (context, index) {
+                              final item = controller.ledgerDatalist[index];
+                              return Obx(() {
+                                final isExpanded =
+                                    controller.expandedIndex.value == index;
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: _ui.widthPercent(2)),
+                                  child: LedgerCard(
+                                      index: index,
+                                      isExpanded: isExpanded,
+                                      item: item),
+                                );
+                              });
+                            },
+                          ),
+                        ),
+                      );
+                    }
+                  })
+              : Obx(() {
+                  if (controller.isloading.value) {
+                    return Center(
+                      child: ProgressIndicatorWidget(),
+                    );
+                  } else if (controller.filterledgerDatalist.isEmpty) {
+                    return NoDataUI();
+                  } else {
+                    return Expanded(
+                      child: Obx(
+                        () => ListView.separated(
+                          itemCount: controller.filterledgerDatalist.length,
+                          separatorBuilder: (_, __) => const Divider(height: 2),
+                          itemBuilder: (context, index) {
+                            final item = controller.filterledgerDatalist[index];
+                            return Obx(() {
+                              final isExpanded =
+                                  controller.expandedIndex.value == index;
+                              return Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: _ui.widthPercent(2)),
+                                child: LedgerCard(
+                                    index: index,
+                                    isExpanded: isExpanded,
+                                    item: item),
+                              );
+                            });
+                          },
+                        ),
+                      ),
+                    );
+                  }
+                })),
+          Obx(() {
+            if (controller.ledgerDatalist.isNotEmpty &&
+                controller.total_pages.value > 1) {
+              // Pagination controls
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.chevron_left),
+                    onPressed: () {
+                      if (controller.currentPage.value > 1) {
+                        controller.prevPage();
+                      }
+                    },
+                  ),
+                  Obx(() => Text(controller.currentPage.value.toString() +
+                      " of " +
+                      controller.total_pages.value.toString())),
+                  IconButton(
+                    icon: Icon(Icons.chevron_right),
+                    onPressed: () {
+                      print('Length : ${controller.ledgerDatalist.length}');
+                      if (!controller.isLastPage.value) {
+                        controller.nextPage();
+                      }
+                    },
+                  ),
+                ],
+              );
+            } else {
+              return SizedBox.shrink();
+            }
+          }),
         ],
       ),
     );

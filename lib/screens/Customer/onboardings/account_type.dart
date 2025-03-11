@@ -51,7 +51,7 @@ class AccountSelection extends GetView<AccountTypeController> {
               () => AccountCard(
                 title: "Customer Login",
                 description: "For customers looking to explore our services.",
-                image: 'assets/images/onboardings/customer.png',
+                image: 'assets/images/onboardings/customer.svg',
                 isSelected: controller.isCustomer.value,
               ),
             ),
@@ -64,7 +64,7 @@ class AccountSelection extends GetView<AccountTypeController> {
               () => AccountCard(
                 title: "Staff Login",
                 description: "For staff members to manage and assist users.",
-                image: 'assets/images/onboardings/staff.png',
+                image: 'assets/images/onboardings/staff.svg',
                 isSelected: controller.isStaff.value,
               ),
             ),

@@ -22,6 +22,7 @@ class SingInController extends GetxController {
   ApiService _apiService = ApiService();
   late final MPinController _mPinController;
   late final AccountTypeController _accountTypeController;
+  LoginResponse? loginResponse;
 
   @override
   void onInit() {
@@ -63,6 +64,9 @@ class SingInController extends GetxController {
         Get.offNamedUntil(Routes.otp, (route) => false);
         contactController.clear();
         LoadingView.hide();
+        LocalStorageManager.saveData(
+            'showQr', v?.userRights.barcodeScanner.toString());
+        LocalStorageManager.saveData('user_name', v?.user?.name ?? 'User');
       } else {
         LoadingView.hide();
         Get.snackbar(
@@ -72,6 +76,8 @@ class SingInController extends GetxController {
             colorText: ColorPallets.white);
       }
     });
+
+    update();
   }
 
   Future<void> goToType() async {

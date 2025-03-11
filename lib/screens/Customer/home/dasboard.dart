@@ -17,59 +17,85 @@ class DashboardScreen extends GetView<DasboardController> {
   Widget build(BuildContext context) {
     ResponsiveUI _ui = ResponsiveUI(context);
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: ColorPallets.themeColor,
         title: Text(
           'Shiva Poly Packs',
           style: Styles.getstyle(
-              fontcolor: ColorPallets.white,
-              fontweight: FontWeight.bold,
-              fontsize: _ui.widthPercent(6)),
+            fontcolor: ColorPallets.white,
+            fontweight: FontWeight.w600,
+            fontsize: _ui.widthPercent(5.5),
+          ),
         ),
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.notifications_active,
-              color: ColorPallets.white,
-            ),
-            onPressed: () => controller.showNotificationMenu(),
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.account_circle,
-              color: ColorPallets.white,
-            ),
-            onPressed: () => Get.toNamed(Routes.cus_profile),
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.logout,
-              color: ColorPallets.white,
-            ),
+            icon: Icon(Icons.account_circle, color: ColorPallets.white),
             onPressed: () {
-              SignOutDialog.showSignOutDialog(context);
+              controller.goToProfile();
+              Get.toNamed(Routes.cus_profile);
             },
+          ),
+          IconButton(
+            icon: Icon(Icons.logout, color: ColorPallets.white),
+            onPressed: () => SignOutDialog.showSignOutDialog(context),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 20,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              ColorPallets.themeColor.withOpacity(0.1),
+              Colors.grey[100]!,
+            ],
           ),
-          itemCount: controller.cardData.length,
-          itemBuilder: (context, index) {
-            final data = controller.cardData[index];
-            return HomeCard(
-              icon: data['icon'],
-              title: data['title'],
-              backgroundColor: data['backgroundColor'],
-              onTap: data['onTap'],
-            );
-          },
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: _ui.widthPercent(4),
+              vertical: _ui.heightPercent(2),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Dashboard',
+                  style: Styles.getstyle(
+                    fontweight: FontWeight.bold,
+                    fontsize: _ui.widthPercent(7),
+                    fontcolor: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: _ui.heightPercent(2)),
+                Expanded(
+                  child: GridView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: _ui.widthPercent(4),
+                      mainAxisSpacing: _ui.heightPercent(2),
+                      childAspectRatio: 1,
+                    ),
+                    itemCount: controller.cardData.length,
+                    itemBuilder: (context, index) {
+                      final data = controller.cardData[index];
+                      return EnhancedHomeCard(
+                        icon: data['icon'],
+                        title: data['title'],
+                        backgroundColor: data['backgroundColor'],
+                        onTap: data['onTap'],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

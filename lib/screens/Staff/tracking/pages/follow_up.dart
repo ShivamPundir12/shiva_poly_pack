@@ -184,6 +184,7 @@ class FollowUpScreen extends GetView<FollowUp> {
                                     bottom: _ui.heightPercent(0.4),
                                   ),
                                   child: FollowUpCard(
+                                    index: index,
                                     item: item,
                                     eyeonTap: () async {
                                       controller.getFollowUpData(
@@ -233,6 +234,7 @@ class FollowUpScreen extends GetView<FollowUp> {
                                         ),
                                         child: FollowUpCard(
                                           item: item,
+                                          index: index,
                                           eyeonTap: () async {
                                             controller.getFollowUpData(
                                                 id: item.id.toString());

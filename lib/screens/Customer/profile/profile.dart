@@ -7,6 +7,7 @@ import 'package:shiva_poly_pack/data/controller/profile.dart';
 import 'package:shiva_poly_pack/data/model/login.dart';
 import 'package:shiva_poly_pack/data/services/validation.dart';
 import 'package:shiva_poly_pack/material/color_pallets.dart';
+import 'package:shiva_poly_pack/material/image_preview.dart';
 import 'package:shiva_poly_pack/material/indicator.dart';
 import 'package:shiva_poly_pack/material/responsive.dart';
 
@@ -33,66 +34,52 @@ class ProfileScreen extends GetView<ProfileController> {
         ),
         iconTheme: IconThemeData(color: ColorPallets.white),
         actions: [
-          IconButton(
-            icon: Icon(
-              Icons.notifications_active,
-              color: ColorPallets.white,
-            ),
-            onPressed: () {},
-          ),
+          // IconButton(
+          //   icon: Icon(
+          //     Icons.notifications_active,
+          //     color: ColorPallets.white,
+          //   ),
+          //   onPressed: () {},
+          // ),
         ],
       ),
-      bottomSheet: Container(
-        margin: EdgeInsets.symmetric(vertical: _ui.heightPercent(1.4)),
-        child: // Save and Cancel Buttons
-            Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                if (controller.local_image.isNotEmpty) {
-                  controller.local_image.value = '';
-                }
-                Get.back();
-              },
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: _ui.widthPercent(11)),
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(color: ColorPallets.themeColor),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                backgroundColor: ColorPallets.white,
-              ),
-              child: Text(
-                'Cancel',
-                style: Styles.getstyle(
-                    fontweight: FontWeight.w500,
-                    fontcolor: ColorPallets.themeColor),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () => controller.updateProfile(),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: _ui.widthPercent(11)),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6)),
-                backgroundColor: ColorPallets.themeColor,
-              ),
-              child: Text(
-                'Save',
-                style: Styles.getstyle(
-                    fontweight: FontWeight.w500, fontcolor: ColorPallets.white),
-              ),
-            ),
-          ],
-        ),
-      ),
+      // bottomSheet: Container(
+      //   margin: EdgeInsets.symmetric(vertical: _ui.heightPercent(1.4)),
+      //   child: // Save and Cancel Buttons
+      //       Row(
+      //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //     children: [
+      //       ElevatedButton(
+      //         onPressed: () {
+      //           if (controller.local_image.isNotEmpty) {
+      //             controller.local_image.value = '';
+      //           }
+      //           Get.back();
+      //         },
+      //         style: ElevatedButton.styleFrom(
+      //           padding: EdgeInsets.symmetric(horizontal: _ui.widthPercent(11)),
+      //           shape: RoundedRectangleBorder(
+      //             side: BorderSide(color: ColorPallets.themeColor),
+      //             borderRadius: BorderRadius.circular(6),
+      //           ),
+      //           backgroundColor: ColorPallets.white,
+      //         ),
+      //         child: Text(
+      //           'Cancel',
+      //           style: Styles.getstyle(
+      //               fontweight: FontWeight.w500,
+      //               fontcolor: ColorPallets.themeColor),
+      //         ),
+      //       ),
+
+      //     ],
+      //   ),
+      // ),
       body: Form(
         key: controller.fromkey,
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Obx(() {
-            controller.fetchProfile();
             return controller.isLoading.value
                 ? Center(
                     child: ProgressIndicatorWidget(),
@@ -140,28 +127,34 @@ class ProfileScreen extends GetView<ProfileController> {
                           fit: StackFit.passthrough,
                           children: [
                             Obx(
-                              () => CircleAvatar(
-                                radius: 50,
-                                backgroundImage: controller
-                                            .image_url.value.isNotEmpty &&
-                                        controller.local_image.isEmpty
-                                    ? NetworkImage(
-                                        controller.url +
-                                            controller.image_url.value,
-                                      )
-                                    : controller.local_image.value.isNotEmpty
-                                        ? FileImage(
-                                            File(controller.local_image.value),
-                                          )
-                                        : null,
-                                child: controller.image_url.isEmpty &&
-                                        controller.local_image.isEmpty
-                                    ? Icon(
-                                        CupertinoIcons.person,
-                                        size: _ui.widthPercent(11),
-                                      )
-                                    : null,
-                                backgroundColor: Colors.grey[300],
+                              () => GestureDetector(
+                                onTap: () => ImagePreview().showImagePreview(
+                                    controller.url + controller.image_url.value,
+                                    context),
+                                child: CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage: controller
+                                              .image_url.value.isNotEmpty &&
+                                          controller.local_image.isEmpty
+                                      ? NetworkImage(
+                                          controller.url +
+                                              controller.image_url.value,
+                                        )
+                                      : controller.local_image.value.isNotEmpty
+                                          ? FileImage(
+                                              File(
+                                                  controller.local_image.value),
+                                            )
+                                          : null,
+                                  child: controller.image_url.isEmpty &&
+                                          controller.local_image.isEmpty
+                                      ? Icon(
+                                          CupertinoIcons.person,
+                                          size: _ui.widthPercent(11),
+                                        )
+                                      : null,
+                                  backgroundColor: Colors.grey[300],
+                                ),
                               ),
                             ),
                             Padding(
@@ -182,13 +175,13 @@ class ProfileScreen extends GetView<ProfileController> {
                       const SizedBox(height: 20),
 
                       // Username Field
-                      _buildEditableField2(
-                        context: context,
-                        txtcontroller: controller.username,
-                        label: 'Username',
-                        value: 'example1234',
-                      ),
-                      const SizedBox(height: 10),
+                      // _buildEditableField2(
+                      //   context: context,
+                      //   txtcontroller: controller.username,
+                      //   label: 'Username',
+                      //   value: 'example1234',
+                      // ),
+                      // const SizedBox(height: 10),
 
                       // Mobile Number Field
                       _buildEditableField2(
@@ -235,7 +228,56 @@ class ProfileScreen extends GetView<ProfileController> {
                         onEdit: () => controller.onEdit(),
                       ),
 
-                      SizedBox(height: _ui.heightPercent(8)),
+                      SizedBox(height: _ui.heightPercent(3)),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: _ui.widthPercent(2)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                if (controller.local_image.isNotEmpty) {
+                                  controller.local_image.value = '';
+                                }
+                                controller.onedit.value = false;
+                                Get.back();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: _ui.widthPercent(11)),
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                        color: ColorPallets.themeColor2),
+                                    borderRadius: BorderRadius.circular(6)),
+                                backgroundColor: ColorPallets.white,
+                              ),
+                              child: Text(
+                                'Cancel',
+                                style: Styles.getstyle(
+                                    fontweight: FontWeight.w500,
+                                    fontcolor: ColorPallets.themeColor2),
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => controller.updateProfile(),
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: _ui.widthPercent(11)),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6)),
+                                backgroundColor: ColorPallets.themeColor,
+                              ),
+                              child: Text(
+                                'Save',
+                                style: Styles.getstyle(
+                                    fontweight: FontWeight.w500,
+                                    fontcolor: ColorPallets.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   );
           }),
@@ -282,21 +324,34 @@ class ProfileScreen extends GetView<ProfileController> {
                 ],
               ),
               const SizedBox(height: 4),
-              Obx(
-                () => Card(
-                  clipBehavior: Clip.none,
-                  child: TextFormField(
-                    controller: txtcontroller,
-                    validator: validator,
-                    readOnly: controller.onedit.value ? false : true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+              Card(
+                clipBehavior: Clip.none,
+                child: TextFormField(
+                  controller: txtcontroller,
+                  validator: validator,
+                  readOnly: controller.onedit.value ? false : true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
               ),
+              // Obx(
+              //   () => Card(
+              //     clipBehavior: Clip.none,
+              //     child: TextFormField(
+              //       controller: txtcontroller,
+              //       validator: validator,
+              //       readOnly: controller.onedit.value ? false : true,
+              //       decoration: InputDecoration(
+              //         border: OutlineInputBorder(
+              //           borderRadius: BorderRadius.circular(8),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),

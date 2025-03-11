@@ -260,6 +260,7 @@ class NewLeads extends GetView<NewLeadsController> {
                                       child: Obx(
                                         () => NewLeadsCard(
                                           item: item,
+                                          index: index,
                                           onTap: () => controller.toggle(index),
                                           isExpanded:
                                               controller.isExpanded(index),
@@ -423,6 +424,7 @@ class NewLeads extends GetView<NewLeadsController> {
                                   child: Obx(
                                     () => NewLeadsCard(
                                       item: item,
+                                      index: index,
                                       onTap: () => controller.toggle(index),
                                       isExpanded: controller.isExpanded(index),
                                     ),

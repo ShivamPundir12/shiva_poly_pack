@@ -5,6 +5,7 @@ import 'package:shiva_poly_pack/data/controller/local_storage.dart';
 import 'package:shiva_poly_pack/data/controller/sing_in.dart';
 import 'package:shiva_poly_pack/data/model/login.dart';
 import 'package:shiva_poly_pack/data/services/api_service.dart';
+import 'package:shiva_poly_pack/material/color_pallets.dart';
 import 'package:shiva_poly_pack/material/indicator.dart';
 import 'package:shiva_poly_pack/routes/app_routes.dart';
 
@@ -50,11 +51,15 @@ class AccountTypeController extends GetxController {
       LoadingView.show();
       Get.offNamed(Routes.sigin);
       // await choosed_type(customerLogin: false);
-    } else {
+    } else if (isCustomer.value) {
       // Get.snackbar('Info',
       //     'Customer Portal is under progress! \nwill be available soon.');
       LoadingView.show();
       Get.offNamed(Routes.sigin);
+    } else {
+      Get.snackbar('Info', 'Please choose an Account Type',
+          colorText: ColorPallets.white,
+          backgroundColor: ColorPallets.themeColor2);
     }
     LocalStorageManager.saveData('isStaff', isStaff.value);
   }

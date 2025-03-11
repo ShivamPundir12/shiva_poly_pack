@@ -211,6 +211,7 @@ class FinalCustomer extends GetView<FinalCustomerController> {
                                     ),
                                     child: FinalCustomerCard(
                                       item: item,
+                                      index: index,
                                       onTap: () {
                                         FollowupDialog.showFollowUpDialog(
                                           context,
@@ -272,6 +273,7 @@ class FinalCustomer extends GetView<FinalCustomerController> {
                                       ),
                                       child: FinalCustomerCard(
                                         item: item,
+                                        index: index,
                                         onTap: () {
                                           FollowupDialog.showFollowUpDialog(
                                             context,

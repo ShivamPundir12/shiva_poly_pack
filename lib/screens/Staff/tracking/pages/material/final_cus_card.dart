@@ -10,8 +10,10 @@ import '../../../../../material/responsive.dart';
 import '../../../../../material/styles.dart';
 
 class FinalCustomerCard extends GetView<FinalCustomerController> {
-  FinalCustomerCard({super.key, required this.item, this.onTap});
+  FinalCustomerCard(
+      {super.key, required this.item, this.onTap, required this.index});
   final FinalCustomerData item;
+  final int index;
   final Function()? onTap;
 
   @override
@@ -20,12 +22,13 @@ class FinalCustomerCard extends GetView<FinalCustomerController> {
 
     return Card(
       elevation: 2,
+      color: index % 2 == 0 ? Colors.blue.shade50 : ColorPallets.white,
       child: Container(
         decoration: ShapeDecoration(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          color: ColorPallets.white,
+          // color: ColorPallets.white,
         ),
         // height: _ui.heightPercent(17),
         width: _ui.widthPercent(90),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shiva_poly_pack/data/controller/camera.dart';
 
 Future<void> requestPermissions(BuildContext context) async {
   final locationStatus = await Permission.location.request();
@@ -51,8 +50,8 @@ class CameraPermissionHandler {
   static Future<void> requestCameraPermission(BuildContext context) async {
     PermissionStatus status = await Permission.camera.status;
     PermissionStatus micStatus = await Permission.microphone.status;
-    PermissionStatus bluetoothPermisson = await Permission.bluetooth.status;
     final bluetooth = await Permission.bluetoothConnect.request();
+    final storage = await Permission.storage.request();
 
     if (status.isDenied) {
       // If the permission is denied, request it
@@ -60,6 +59,38 @@ class CameraPermissionHandler {
       Get.snackbar('Note', 'Please restart the app to use camera');
     } else if (micStatus.isDenied) {
       micStatus = await Permission.microphone.request();
+    }
+
+    if (storage.isDenied) {
+      Get.snackbar('Note', 'Storage Permission is required');
+      await Permission.storage.request();
+    } else if (storage.isPermanentlyDenied) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Storage Permission Needed'),
+            content: const Text(
+              'Storage access is required to take photos. Please enable it in the app settings.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  openAppSettings(); // Open the app settings
+                },
+                child: const Text('Open Settings'),
+              ),
+            ],
+          );
+        },
+      );
     }
 
     if (bluetooth.isDenied) {

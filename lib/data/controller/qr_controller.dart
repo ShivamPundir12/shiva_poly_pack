@@ -54,31 +54,38 @@ class QRScannerController extends GetxController {
     update();
   }
 
-  void loadUrl(String url) {
-    webViewController.loadRequest(Uri.parse(url + '&encryption=8&xD@M4#Zq2T'));
-    update();
+  Future<void> loadUrl(String url) async {
+    webViewController.loadRequest(Uri.parse(
+        url + '&encryption=730ff998-ae08-31634697-b459-737883a27503'));
   }
 
   QRScannerController() {
     // isInitilizing.value = true;
 
-    qrController = MobileScannerController();
-    // Future.delayed(Durations.long1).then((v) {
-    //   isInitilizing.value = false;
-    // });
-    // update();
+    qrController = MobileScannerController(
+      detectionSpeed: DetectionSpeed.noDuplicates,
+      detectionTimeoutMs: 1500,
+    );
   }
 
   /// Handle detected QR code from the scanner
   Future<void> handleQRCode(String scannedData) async {
     try {
-      final Uri url = Uri.parse(scannedData + '&encryption=8&xD@M4#Zq2T');
+      print("Scanned Data: 1");
       // Log the URL for debugging
-      print('Scanned URL: $url&encryption=8&xD@M4#Zq2T');
+      print(
+          'Scanned URL: $scannedData&encryption=730ff998-ae08-31634697-b459-737883a27503');
       // Validate the URL
-      if (url.scheme == 'http' || url.scheme == 'https') {
+      if (scannedData.isNotEmpty) {
+        qrController.stop();
+        loadUrl(scannedData +
+            '&encryption=730ff998-ae08-31634697-b459-737883a27503');
         // Navigate to the WebView screen with the scanned URL
-        Get.to(() => WebViewScreen(initialUrl: scannedData));
+        Get.off(
+          () => WebViewScreen(
+              initialUrl: scannedData +
+                  '&encryption=730ff998-ae08-31634697-b459-737883a27503'),
+        )?.then((v) {});
       } else {
         // If the URL is invalid, show an error message
         Get.snackbar('Error', 'Invalid URL: $scannedData');
@@ -113,7 +120,7 @@ class QRScannerController extends GetxController {
   }
 
   void stopQRScanner() {
-    qrController.stop(); // Stops the camera in the QR scanner
+    qrController.stop();
   }
 
   @override
